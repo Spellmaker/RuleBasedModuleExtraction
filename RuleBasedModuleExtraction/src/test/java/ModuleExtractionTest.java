@@ -33,9 +33,7 @@ public class ModuleExtractionTest {
 		List<OWLClass> ontologySignature = new ArrayList<>();
 		mCheck = new ModuleCheck(m);
 		ontology.getSignature().stream().filter(x -> x instanceof OWLClass).forEach(x -> ontologySignature.add((OWLClass)x));
-		
-		
-		//System.out.println("size is: " + ontologySignature.size());
+	
 		int max = 100000;
 		
 		startTime = System.currentTimeMillis();
@@ -64,13 +62,9 @@ public class ModuleExtractionTest {
 		
 		OWLAxiom testRB = mCheck.isSyntacticalLocalModule(ontology, module);
 		assertTrue("is no syntactical local module due to axiom '" + testRB + "'", testRB == null);
-		OWLAxiom testL = mCheck.isSyntacticalLocalModule(ontology, module2);
-		
-		//assertTrue("RB and Locality fail or don't fail syntactically together", (testRB == null && testL == null) || (testRB != null && testL != null)); 
 		
 		testRB = mCheck.isSemanticalLocalModule(ontology, module);
 		assertTrue("is no semantical local module due to axiom '" + testRB + "'", testRB == null);
-		testL = mCheck.isSemanticalLocalModule(ontology, module2);
 		
 		int msize = module.size();
 		int m2size = module2.size();
@@ -84,7 +78,6 @@ public class ModuleExtractionTest {
 		if(msize < m2size) System.out.println("rules found a smaller module");
 		if(m2size < msize){
 			fail("rule based module is too big; " + module.size() + " vs " + module2.size() + " with signature " + signature);
-		}
-		//assertTrue("RB and Locality fail or don't fail semantically together", (testRB == null && testL == null) || (testRB != null && testL != null)); 
+		} 
 	}
 }

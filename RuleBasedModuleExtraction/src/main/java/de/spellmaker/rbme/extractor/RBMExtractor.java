@@ -8,14 +8,12 @@ import java.util.Set;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import de.spellmaker.rbme.rule.Rule;
 import de.spellmaker.rbme.rule.RuleSet;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class RBMExtractor {
 	public static Set<OWLAxiom> extractModule(RuleSet ruleSet, OWLOntology ontology, Set<OWLClass> signature){
@@ -23,10 +21,6 @@ public class RBMExtractor {
 		
 		//initialize the processing queue to the signature
 		ProcessingQueue procQueue = new ProcessingQueue(signature);
-
-		//add signature, but remove owl:thing from it
-		//OWLEntity owlThing = (new OWLDataFactoryImpl()).getOWLThing();
-		//signature.stream().filter(x -> !x.equals(owlThing)).forEach(x -> procQueue.add(x));
 		
 		//index all rules by their body elements
 		Map<Object, List<Rule>> ruleMap = new HashMap<>();
