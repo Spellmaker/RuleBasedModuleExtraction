@@ -30,7 +30,13 @@ public class ModuleExtractionTest {
 	
 	@Test public void TestModuleExtraction() throws OWLOntologyCreationException{
 		OWLOntologyManager m = OWLManager.createOWLOntologyManager();
-		OWLOntology ontology = m.loadOntologyFromOntologyDocument(new File(Main.onto_path));
+		OWLOntology ontology = null;
+		try{
+			ontology = m.loadOntologyFromOntologyDocument(new File(Main.onto_path));
+		}
+		catch(Exception e){
+			fail("Missing ontology file '" + Main.onto_path + "'");
+		}
 		//OWLOntology ontology = m.loadOntologyFromOntologyDocument(new File("C:\\Users\\spellmaker\\Downloads\\ore2014_dataset\\dataset\\files\\approximated_896c66df-2415-4e7a-8a3e-aed1f56be49d_ine_roller.ttl_functional.owl"));
 		List<OWLClass> ontologySignature = new ArrayList<>();
 		mCheck = new ModuleCheck(m);
