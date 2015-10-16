@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://chen.moe/onto/med/"
+     xml:base="http://chen.moe/onto/med/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://chen.moe/onto/med/"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://chen.moe/onto/med/associated_With -->
+
+    <owl:ObjectProperty rdf:about="http://chen.moe/onto/med/associated_With"/>
+    
+
+
+    <!-- http://chen.moe/onto/med/has_Origin -->
+
+    <owl:ObjectProperty rdf:about="http://chen.moe/onto/med/has_Origin"/>
+    
+
+
+    <!-- http://chen.moe/onto/med/located_In -->
+
+    <owl:ObjectProperty rdf:about="http://chen.moe/onto/med/located_In"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://chen.moe/onto/med/Cystic_Fibrosis -->
+
+    <owl:Class rdf:about="http://chen.moe/onto/med/Cystic_Fibrosis">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://chen.moe/onto/med/Fibrosis"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://chen.moe/onto/med/has_Origin"/>
+                        <owl:someValuesFrom rdf:resource="http://chen.moe/onto/med/Genetic_Origin"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://chen.moe/onto/med/located_In"/>
+                        <owl:someValuesFrom rdf:resource="http://chen.moe/onto/med/Pancreas"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://chen.moe/onto/med/DEFBI_Gene -->
+
+    <owl:Class rdf:about="http://chen.moe/onto/med/DEFBI_Gene">
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://chen.moe/onto/med/Immuno_Protein_Gene"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://chen.moe/onto/med/associated_With"/>
+                        <owl:someValuesFrom rdf:resource="http://chen.moe/onto/med/Cystic_Fibrosis"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://chen.moe/onto/med/Fibrosis -->
+
+    <owl:Class rdf:about="http://chen.moe/onto/med/Fibrosis"/>
+    
+
+
+    <!-- http://chen.moe/onto/med/Genetic_Disorder -->
+
+    <owl:Class rdf:about="http://chen.moe/onto/med/Genetic_Disorder"/>
+    
+
+
+    <!-- http://chen.moe/onto/med/Genetic_Fibrosis -->
+
+    <owl:Class rdf:about="http://chen.moe/onto/med/Genetic_Fibrosis">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://chen.moe/onto/med/Fibrosis"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://chen.moe/onto/med/has_Origin"/>
+                        <owl:someValuesFrom rdf:resource="http://chen.moe/onto/med/Genetic_Origin"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://chen.moe/onto/med/Genetic_Disorder"/>
+    </owl:Class>
+    
+
+
+    <!-- http://chen.moe/onto/med/Genetic_Origin -->
+
+    <owl:Class rdf:about="http://chen.moe/onto/med/Genetic_Origin"/>
+    
+
+
+    <!-- http://chen.moe/onto/med/Immuno_Protein_Gene -->
+
+    <owl:Class rdf:about="http://chen.moe/onto/med/Immuno_Protein_Gene"/>
+    
+
+
+    <!-- http://chen.moe/onto/med/Pancreas -->
+
+    <owl:Class rdf:about="http://chen.moe/onto/med/Pancreas"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:Class>
+        <rdfs:subClassOf rdf:resource="http://chen.moe/onto/med/Genetic_Fibrosis"/>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://chen.moe/onto/med/Fibrosis"/>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://chen.moe/onto/med/located_In"/>
+                <owl:someValuesFrom rdf:resource="http://chen.moe/onto/med/Pancreas"/>
+            </owl:Restriction>
+        </owl:intersectionOf>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+
