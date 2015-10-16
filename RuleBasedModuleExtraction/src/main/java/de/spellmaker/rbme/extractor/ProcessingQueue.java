@@ -17,6 +17,13 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDeclarationAxiomImpl;
 
+/**
+ * Main processing queue for the rule-based module extraction.
+ * This class encapsulates the data structures to ensure that entities are added to the correct structures.
+ * Most queue functions remain unimplemented
+ * @author spellmaker
+ *
+ */
 public class ProcessingQueue implements Queue<Object>{
 	private Set<OWLAxiom> module;
 	private Set<Object> knownNotBottom;
@@ -36,10 +43,19 @@ public class ProcessingQueue implements Queue<Object>{
 		knownNotBottom.add(owlThing);
 	}
 	
+	/**
+	 * Adds the given axiom to the module build buy the processing queue
+	 * @param ax An OWL Axiom
+	 */
 	public void addToModule(OWLAxiom ax){
 		module.add(ax);
 	}
 	
+	/**
+	 * Provides access to the module build in the processing queue
+	 * The returned module is only correct when the processing has terminated
+	 * @return A set of OWL Axioms forming a module
+	 */
 	public Set<OWLAxiom> getModule(){
 		return module;
 	}
@@ -106,11 +122,14 @@ public class ProcessingQueue implements Queue<Object>{
 
 	@Override
 	public boolean add(Object e) {
+		//add the entity to the list of those known to be possibly not bottom
 		if(knownNotBottom.add(e)){
+			//only if it is actually new knowledge process further
 			if(e instanceof OWLClass || e instanceof OWLObjectProperty){
+				//add declarations for classes and properties to the module
 				module.add(new OWLDeclarationAxiomImpl((OWLEntity)e, Collections.emptyList()));
 			}
-			
+			//add the entity to the processing queue
 			return queue.add(e);
 		}
 		return false;

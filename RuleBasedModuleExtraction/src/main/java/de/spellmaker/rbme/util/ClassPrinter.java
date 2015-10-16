@@ -15,7 +15,17 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
+/**
+ * Utility class which can be used to print diverse OWL objects
+ * @author spellmaker
+ *
+ */
 public class ClassPrinter {
+	/**
+	 * Prints a complex OWL class
+	 * @param oce The OWL class
+	 * @return A text representation of the class
+	 */
 	public static String printClass(Object oce){
 		String s = "";
 		
@@ -41,6 +51,11 @@ public class ClassPrinter {
 		return s;
 	}
 	
+	/**
+	 * Prints an OWL axiom
+	 * @param ax An OWL axiom
+	 * @return A text representation of the axiom
+	 */
 	public static String printAxiom(OWLAxiom ax){
 		String s = "";
 		if(ax instanceof OWLEquivalentClassesAxiom){
@@ -73,6 +88,11 @@ public class ClassPrinter {
 		return s;
 	}
 	
+	/**
+	 * Prints an IRI in a readable format
+	 * @param iri An IRI
+	 * @return A text representation of the IRI
+	 */
 	public static String printIRI(String iri){
 		return iri.substring(iri.lastIndexOf("/") + 1);
 	}

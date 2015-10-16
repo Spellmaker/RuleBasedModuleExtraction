@@ -29,12 +29,13 @@ public class ModuleExtractionTest {
 	
 	@Test public void TestModuleExtraction() throws OWLOntologyCreationException{
 		OWLOntologyManager m = OWLManager.createOWLOntologyManager();
-		OWLOntology ontology = m.loadOntologyFromOntologyDocument(new File("C:\\Users\\spellmaker\\Downloads\\ore2014_dataset\\dataset\\files\\approximated_896c66df-2415-4e7a-8a3e-aed1f56be49d_ine_roller.ttl_functional.owl"));
+		OWLOntology ontology = m.loadOntologyFromOntologyDocument(new File("C:\\Users\\spellmaker\\git\\rbme\\RuleBasedModuleExtraction\\EL-GALEN.owl"));
+		//OWLOntology ontology = m.loadOntologyFromOntologyDocument(new File("C:\\Users\\spellmaker\\Downloads\\ore2014_dataset\\dataset\\files\\approximated_896c66df-2415-4e7a-8a3e-aed1f56be49d_ine_roller.ttl_functional.owl"));
 		List<OWLClass> ontologySignature = new ArrayList<>();
 		mCheck = new ModuleCheck(m);
 		ontology.getSignature().stream().filter(x -> x instanceof OWLClass).forEach(x -> ontologySignature.add((OWLClass)x));
 	
-		int max = 100000;
+		int max = 100;
 		
 		startTime = System.currentTimeMillis();
 		extractor = new SyntacticLocalityModuleExtractor(m, ontology, ModuleType.BOT);
@@ -57,14 +58,18 @@ public class ModuleExtractionTest {
 	}
 	
 	private void testSignature(Set<OWLClass> signature, OWLOntology ontology){
-		Set<OWLAxiom> module = RBMExtractor.extractModule(ruleSet, ontology, Collections.unmodifiableSet(signature));
+		Set<OWLAxiom> module = RBMExtractor.extractModule(ruleSet, Collections.unmodifiableSet(signature));
 		Set<OWLAxiom> module2 = extractor.extract(Collections.unmodifiableSet(signature));
+
+		if(mCheck.isSyntacticalLocalModule(ontology, module2) != null) System.out.println("owlapi module is not syntactically local module");
+		if(mCheck.isSemanticalLocalModule(ontology, module2) != null) System.out.println("owlapi module is not semantically local module");
 		
 		OWLAxiom testRB = mCheck.isSyntacticalLocalModule(ontology, module);
 		assertTrue("is no syntactical local module due to axiom '" + testRB + "'", testRB == null);
 		
 		testRB = mCheck.isSemanticalLocalModule(ontology, module);
 		assertTrue("is no semantical local module due to axiom '" + testRB + "'", testRB == null);
+		
 		
 		int msize = module.size();
 		int m2size = module2.size();

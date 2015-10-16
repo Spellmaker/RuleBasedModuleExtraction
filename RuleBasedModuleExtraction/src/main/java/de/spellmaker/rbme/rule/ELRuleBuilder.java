@@ -14,7 +14,14 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
+import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 
+/**
+ * EL implementation of the RuleBuilder interface.
+ * Compiles an EL Ontology into a set of rules to extract modules from it
+ * @author spellmaker
+ *
+ */
 public class ELRuleBuilder implements RuleBuilder{
 	
 	@Override
@@ -57,6 +64,9 @@ public class ELRuleBuilder implements RuleBuilder{
 		else if(axiom instanceof OWLSubObjectPropertyOfAxiom){
 			//TODO: implement
 			//System.out.println("WARNING: Unprocessed Axiom '" + axiom + "'");
+		}
+		else if(axiom instanceof OWLTransitiveObjectPropertyAxiom){
+			//skip
 		}
 		else{
 			throw new IllegalArgumentException("unknown axiomtype " + axiom.getClass());

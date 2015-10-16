@@ -9,6 +9,11 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 
 import de.spellmaker.rbme.util.ClassPrinter;
 
+/**
+ * Represents a module extraction rule
+ * @author spellmaker
+ *
+ */
 public class Rule {
 	private Set<Object> body;
 	private Object head;
@@ -23,19 +28,37 @@ public class Rule {
 		}
 	}
 
+	/**
+	 * Offers the object to the rule, marking it as completed.
+	 * @param o An object, which will be marked as completed in the rule body
+	 * @return True, if all elements in the rule body have been marked as completed
+	 */
 	public boolean offer(Object o){
 		this.body.remove(o);
 		return isFinished();
 	}
 	
+	/**
+	 * Checks for completion of the rule
+	 * @return True, if all elements in the rule body have been marked as completed
+	 */
 	public boolean isFinished(){
 		return this.body.size() == 0;
 	}
 	
+	/**
+	 * Provides access to the rule body.
+	 * Note that completing elements will remove them from the rule body.
+	 * @return An unmodifiable set of the elements in the rule body
+	 */
 	public Set<Object> getBody(){
 		return Collections.unmodifiableSet(body);
 	}
 	
+	/**
+	 * Provides access to the rules head
+	 * @return The head of the rule
+	 */
 	public Object getHead(){
 		return head;
 	}

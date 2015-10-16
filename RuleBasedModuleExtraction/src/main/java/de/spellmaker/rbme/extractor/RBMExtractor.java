@@ -10,13 +10,22 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLOntology;
-
 import de.spellmaker.rbme.rule.Rule;
 import de.spellmaker.rbme.rule.RuleSet;
 
+/**
+ * Extracts a local module from an ontology
+ * @author spellmaker
+ *
+ */
 public class RBMExtractor {
-	public static Set<OWLAxiom> extractModule(RuleSet ruleSet, OWLOntology ontology, Set<OWLClass> signature){
+	/**
+	 * Uses the rules provided by the rule set to extract a module using the given signature
+	 * @param ruleSet A set of rules constructed by a RuleBuilder 
+	 * @param signature A set of OWL classes forming a signature
+	 * @return A set of OWL axioms forming a module for the signature
+	 */
+	public static Set<OWLAxiom> extractModule(RuleSet ruleSet, Set<OWLClass> signature){
 		Set<Rule> rules = ruleSet.getRules();				//set of created rules
 		
 		//initialize the processing queue to the signature

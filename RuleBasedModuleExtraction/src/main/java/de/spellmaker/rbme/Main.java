@@ -36,7 +36,7 @@ public class Main {
 		//addClass(signature, "http://chen.moe/onto/med/Genetic_Disorder");
 		RuleSet rules = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
 		
-		Set<OWLAxiom> module = RBMExtractor.extractModule(rules, ontology, signature);
+		Set<OWLAxiom> module = RBMExtractor.extractModule(rules, signature);
 		System.out.println("Rule based extractor:");
 		printModule(module);
 		System.out.println();
