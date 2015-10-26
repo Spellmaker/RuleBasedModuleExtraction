@@ -24,7 +24,7 @@ import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 
 public class Main {
-	public static String onto_path = "EL-GALEN.owl";//"C:\\Users\\spellmaker\\Downloads\\ore2014_dataset\\dataset\\files\\approximated_896c66df-2415-4e7a-8a3e-aed1f56be49d_ine_roller.ttl_functional.owl";
+	public static String onto_path = "onto.owl";//"EL-GALEN.owl";//"C:\\Users\\spellmaker\\Downloads\\ore2014_dataset\\dataset\\files\\approximated_896c66df-2415-4e7a-8a3e-aed1f56be49d_ine_roller.ttl_functional.owl";
 	
 	public static void main(String[] args) throws Exception{
 		OWLOntologyManager m = OWLManager.createOWLOntologyManager();
@@ -39,11 +39,13 @@ public class Main {
 		//OWLOntology ontology = m.loadOntologyFromOntologyDocument(new File("C:\\Users\\spellmaker\\workspace\\RuleBasedModuleExtraction\\onto.owl"));
 		
 		Set<OWLClass> signature = new HashSet<>();
-		addClass(signature, "http://schema.org/Organization");
+		//addClass(signature, "http://schema.org/Organization");
 		//addClass(signature, "http://purl.org/goodrelations/v1#BusinessFunction");
-		//addClass(signature, "http://chen.moe/onto/med/Cystic_Fibrosis");
-		//addClass(signature, "http://chen.moe/onto/med/Genetic_Disorder");
+		addClass(signature, "http://chen.moe/onto/med/Cystic_Fibrosis");
+		addClass(signature, "http://chen.moe/onto/med/Genetic_Disorder");
 		RuleSet rules = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
+		System.out.println("Size: " + rules.size());
+		System.out.println(rules);
 		
 		Set<OWLAxiom> module = RBMExtractor.extractModule(rules, signature);
 		System.out.println("Rule based extractor:");

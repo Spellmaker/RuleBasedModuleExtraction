@@ -2,6 +2,7 @@ package de.spellmaker.rbme.rule;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Encapsulates a set of rules, prohibiting the modification of the original rules.
@@ -25,5 +26,16 @@ public class RuleSet {
 		this.rules.forEach(x -> resultSet.add(x.clone()));
 		return resultSet;
 	}
+	
+	public int size(){
+		return rules.size();
+	}
 
+	@Override
+	public String toString(){
+		String result = "[";
+		result += rules.stream().map(x -> x.toString()).collect(Collectors.joining(", "));
+		result += "]";
+		return result;
+	}
 }
