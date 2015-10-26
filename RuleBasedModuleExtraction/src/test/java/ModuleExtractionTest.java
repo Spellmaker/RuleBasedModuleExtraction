@@ -65,7 +65,7 @@ public class ModuleExtractionTest {
 	}
 	
 	private void testSignature(Set<OWLClass> signature, OWLOntology ontology){
-		Set<OWLAxiom> module = RBMExtractor.extractModule(ruleSet, Collections.unmodifiableSet(signature));
+		Set<OWLAxiom> module = (new RBMExtractor()).extractModule(ruleSet, Collections.unmodifiableSet(signature));
 		Set<OWLAxiom> module2 = extractor.extract(Collections.unmodifiableSet(signature));
 
 		if(mCheck.isSyntacticalLocalModule(ontology, module2) != null) System.out.println("owlapi module is not syntactically local module");

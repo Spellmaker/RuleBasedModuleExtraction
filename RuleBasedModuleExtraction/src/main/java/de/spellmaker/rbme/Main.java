@@ -47,7 +47,7 @@ public class Main {
 		System.out.println("Size: " + rules.size());
 		System.out.println(rules);
 		
-		Set<OWLAxiom> module = RBMExtractor.extractModule(rules, signature);
+		Set<OWLAxiom> module = (new RBMExtractor()).extractModule(rules, signature);
 		System.out.println("Rule based extractor:");
 		printModule(module);
 		System.out.println();
