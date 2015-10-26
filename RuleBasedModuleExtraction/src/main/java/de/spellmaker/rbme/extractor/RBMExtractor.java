@@ -88,10 +88,8 @@ public class RBMExtractor {
 				ruleMap.put(o, current);
 			}
 		}
-		
 		//main processing loop
-		while(!queue.isEmpty()){
-			Object front = queue.poll();
+		for(Object front = queue.poll(); front != null; front = queue.poll()){
 			//process all rules, which have the front element in their body
 			List<Rule> matchRules = ruleMap.get(front);
 			if(matchRules == null) continue;
