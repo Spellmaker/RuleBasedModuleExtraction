@@ -3,3 +3,9 @@
 /.settings/
 /build/
 .classpath
+/catalog-v001.xml
+/EL-GALEN.owl
+.project
+.gradle
+.classpath
+.settings
