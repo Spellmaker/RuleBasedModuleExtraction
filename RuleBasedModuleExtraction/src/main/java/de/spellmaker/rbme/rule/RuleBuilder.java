@@ -15,5 +15,23 @@ public interface RuleBuilder {
 	 * @param axioms The axioms of the source ontologie
 	 * @return A rule set managing the created rules
 	 */
-	public Set<Rule> buildRules(Set<OWLAxiom> axioms);
+	public RuleSet buildRules(Set<OWLAxiom> axioms);
+	
+	/*public static Map<OWLObject, List<Integer>> buildRuleMap(Set<Rule> rules){
+		int pos = 0;
+		Map<OWLObject, List<Integer>> ruleMap = new HashMap<>();
+		for(Rule rule : rules){
+			//ignore bodyless rules
+			if(rule.size() > 0){
+				for(OWLObject o : rule){
+					List<Integer> current = ruleMap.get(o);
+					if(current == null) current = new LinkedList<>();
+					current.add(pos);
+					ruleMap.put(o, current);
+				}
+				pos++;
+			}
+		}
+		return ruleMap;
+	}*/
 }

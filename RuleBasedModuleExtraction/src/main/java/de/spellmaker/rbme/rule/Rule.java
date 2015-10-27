@@ -36,6 +36,10 @@ public class Rule implements Iterable<OWLObject>{
 		return head;
 	}
 	
+	public OWLObject get(int i){
+		return body[i];
+	}
+	
 	@Override
 	public String toString(){
 		String res = "";

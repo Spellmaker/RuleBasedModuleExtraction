@@ -7,6 +7,7 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.semanticweb.HermiT.Configuration.WarningMonitor;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -17,7 +18,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import de.spellmaker.rbme.Main;
 import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
-import de.spellmaker.rbme.rule.Rule;
+import de.spellmaker.rbme.rule.RuleSet;
 import de.spellmaker.rbme.util.ModuleCheck;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
@@ -25,7 +26,7 @@ import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 public class ModuleExtractionTest {
 	private ModuleCheck mCheck;
 	private SyntacticLocalityModuleExtractor extractor;
-	private Set<Rule> ruleSet;
+	private RuleSet ruleSet;
 	private long startTime;
 	
 	@Test public void TestModuleExtraction() throws OWLOntologyCreationException{
@@ -88,8 +89,8 @@ public class ModuleExtractionTest {
 		module2.forEach(x -> System.out.println("additional axiom in local module: '" + x));
 		
 		if(msize < m2size) System.out.println("rules found a smaller module");
-		if(m2size < msize){
-			fail("rule based module is too big; " + module.size() + " vs " + module2.size() + " with signature " + signature);
+		if(m2size < msize){			
+			fail("rule based module is too big; " + msize + " vs " + m2size + " with signature " + signature);
 		} 
 	}
 }

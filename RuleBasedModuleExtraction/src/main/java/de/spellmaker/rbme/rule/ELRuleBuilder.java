@@ -1,5 +1,4 @@
 package de.spellmaker.rbme.rule;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
@@ -72,15 +71,16 @@ import org.semanticweb.owlapi.model.SWRLRule;
  *
  */
 public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpressionVisitor{
-	private Set<Rule> ruleSet;
+	private RuleSet ruleSet;
 	
 	public ELRuleBuilder(){
-		ruleSet = new HashSet<>();
+		ruleSet = new RuleSet();
 	}
 	
 	@Override
-	public Set<Rule> buildRules(Set<OWLAxiom> axioms){
+	public RuleSet buildRules(Set<OWLAxiom> axioms){
 		axioms.forEach(x -> x.accept(this));
+		ruleSet.finalize();
 		return ruleSet;
 	}
 
