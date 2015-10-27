@@ -13,11 +13,11 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import de.spellmaker.rbme.rule.Rule;
-import de.spellmaker.rbme.rule.RuleSet;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDeclarationAxiomImpl;
 
@@ -28,8 +28,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDeclarationAxiomImpl;
  */
 public class RBMExtractor {
 	private Set<OWLAxiom> module;
-	private Set<Object> knownNotBottom;
-	private Queue<Object> queue;
+	private Set<OWLObject> knownNotBottom;
+	private Queue<OWLObject> queue;
 	private OWLEntity owlThing;
 	
 	
@@ -40,9 +40,7 @@ public class RBMExtractor {
 	 * @param signature A set of OWL classes forming a signature
 	 * @return A set of OWL axioms forming a module for the signature
 	 */
-	public Set<OWLAxiom> extractModule(RuleSet ruleSet, Set<OWLClass> signature){
-		Set<Rule> rules = ruleSet.getRules();				//set of created rules
-		
+	public Set<OWLAxiom> extractModule(Set<Rule> rules, Set<OWLClass> signature){		
 		//initialize the processing queue to the signature
 		//ProcessingQueue procQueue = new ProcessingQueue(signature);
 		OWLDataFactory factory = new OWLDataFactoryImpl();
@@ -57,10 +55,44 @@ public class RBMExtractor {
 		knownNotBottom.add(owlThing);
 		
 		
-		
-		
 		//index all rules by their body elements
-		Map<Object, List<Rule>> ruleMap = new HashMap<>();
+		//note: the arrays will have some unused elements in the end, due to the existence of bodyless rules
+		int[] ruleCounter = new int[rules.size()];
+		OWLObject[] ruleHeads = new OWLObject[rules.size()];
+		Map<OWLObject, List<Integer>> ruleMap = new HashMap<>(); 
+		
+		int pos = 0;
+		for(Rule rule : rules){
+			//bodyless rules 
+			if(rule.size() == 0){
+				OWLObject o = rule.getHead();
+				if(o instanceof OWLClassAssertionAxiom){
+					OWLClassAssertionAxiom ax = (OWLClassAssertionAxiom) o;
+					ax.getClassExpression().getSignature().forEach(x -> addQueue(x));
+					module.add(ax);
+					//procQueue.addToModule(ax);
+				}
+				else if(o instanceof OWLObjectPropertyAssertionAxiom){
+					OWLObjectPropertyAssertionAxiom ax = (OWLObjectPropertyAssertionAxiom) o;
+					OWLObjectPropertyExpression prop = ax.getProperty();
+					prop.getSignature().forEach(x -> addQueue(x));			
+					module.add(ax);
+				}
+			}
+			else{
+				ruleCounter[pos] = rule.size();
+				ruleHeads[pos] = rule.getHead();
+				for(OWLObject o : rule){
+					List<Integer> current = ruleMap.get(o);
+					if(current == null) current = new LinkedList<>();
+					current.add(pos);
+					ruleMap.put(o, current);
+				}
+				pos++;
+			}
+		}
+		
+		/*Map<Object, List<Rule>> ruleMap = new HashMap<>();
 		for(Rule rule : rules){
 			//process bodyless rules
 			if(rule.isFinished()){
@@ -81,27 +113,27 @@ public class RBMExtractor {
 				continue;
 			}
 			
-			for(Object o : rule.getBody()){
+			for(OWLObject o : rule.getBody()){
 				List<Rule> current = ruleMap.get(o);
 				if(current == null) current = new LinkedList<>();
 				current.add(rule);
 				ruleMap.put(o, current);
 			}
-		}
+		}*/
 		//main processing loop
-		for(Object front = queue.poll(); front != null; front = queue.poll()){
+		for(OWLObject front = queue.poll(); front != null; front = queue.poll()){
 			//process all rules, which have the front element in their body
-			List<Rule> matchRules = ruleMap.get(front);
+			List<Integer> matchRules = ruleMap.get(front);
 			if(matchRules == null) continue;
 			
 			//element will never enter the queue again, therefore the memory of the list can be freed
 			ruleMap.remove(front);
 			
-			for(Rule cRule : matchRules){
+			for(Integer cRule : matchRules){
 				//check for rule completion, that is, if all body elements 
 				//have been found to be possibly not bottom
-				if(cRule.offer(front)){
-					Object head = cRule.getHead();
+				if(--ruleCounter[cRule] <= 0){//cRule.offer(front)){
+					OWLObject head = ruleHeads[cRule];//cRule.getHead();
 					if(head instanceof OWLAxiom){
 						//in case the head is an axiom, add all new vocabulary from the axiom
 						//into the processing queue
@@ -111,7 +143,7 @@ public class RBMExtractor {
 					}
 					else{
 						//in case of an intermediate rule, add the head
-						addQueue(cRule.getHead());
+						addQueue(head);
 					}
 				}
 			}
@@ -119,7 +151,7 @@ public class RBMExtractor {
 		return module;
 	}
 	
-	private boolean addQueue(Object o){
+	private boolean addQueue(OWLObject o){
 		//add the entity to the list of those known to be possibly not bottom
 		if(knownNotBottom.add(o)){
 			//only if it is actually new knowledge process further

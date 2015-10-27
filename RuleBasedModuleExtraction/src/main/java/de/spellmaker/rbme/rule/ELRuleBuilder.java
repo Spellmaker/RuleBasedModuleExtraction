@@ -39,6 +39,7 @@ import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLIrreflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
@@ -78,9 +79,9 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	}
 	
 	@Override
-	public RuleSet buildRules(Set<OWLAxiom> axioms){
+	public Set<Rule> buildRules(Set<OWLAxiom> axioms){
 		axioms.forEach(x -> x.accept(this));
-		return new RuleSet(ruleSet);
+		return ruleSet;
 	}
 
 	@Override
@@ -116,7 +117,7 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLObjectIntersectionOf ce) {
 		Set<OWLClassExpression> ops = ce.getOperands();
-		ruleSet.add(new Rule(ce, ops.toArray()));
+		ruleSet.add(new Rule(ce, ops.toArray(new OWLObject[0])));
 		for(OWLClassExpression e : ops){
 			e.accept(this);
 		}

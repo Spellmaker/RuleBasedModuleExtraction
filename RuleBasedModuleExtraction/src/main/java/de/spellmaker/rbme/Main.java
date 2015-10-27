@@ -16,7 +16,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
-import de.spellmaker.rbme.rule.RuleSet;
+import de.spellmaker.rbme.rule.Rule;
 import de.spellmaker.rbme.util.ClassPrinter;
 import de.spellmaker.rbme.util.ModuleCheck;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -43,7 +43,7 @@ public class Main {
 		//addClass(signature, "http://purl.org/goodrelations/v1#BusinessFunction");
 		addClass(signature, "http://chen.moe/onto/med/Cystic_Fibrosis");
 		addClass(signature, "http://chen.moe/onto/med/Genetic_Disorder");
-		RuleSet rules = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
+		Set<Rule> rules = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
 		System.out.println("Size: " + rules.size());
 		System.out.println(rules);
 		

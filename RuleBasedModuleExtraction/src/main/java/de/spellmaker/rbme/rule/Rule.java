@@ -1,11 +1,8 @@
 package de.spellmaker.rbme.rule;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
-
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLObject;
 
 import de.spellmaker.rbme.util.ClassPrinter;
 
@@ -14,52 +11,28 @@ import de.spellmaker.rbme.util.ClassPrinter;
  * @author spellmaker
  *
  */
-public class Rule {
-	private Set<Object> body;
-	private Object head;
+public class Rule implements Iterable<OWLObject>{
+	private final OWLObject[] body;
+	private final OWLObject head;
 	
-	public Rule(Object head, Object ...body){
+	public Rule(OWLObject head, OWLObject ...body){
 		if(head == null) throw new NullPointerException("Rule head cannot be null");
 		
 		this.head = head;
-		this.body = new HashSet<Object>();
-		for(Object o : body){
-			this.body.add(o);
+		if(body != null){
+			this.body = new OWLObject[body.length];
+			for(int i = 0; i < body.length; i++) this.body[i] = body[i];
+		}
+		else{
+			this.body = null;
 		}
 	}
-
-	/**
-	 * Offers the object to the rule, marking it as completed.
-	 * @param o An object, which will be marked as completed in the rule body
-	 * @return True, if all elements in the rule body have been marked as completed
-	 */
-	public boolean offer(Object o){
-		this.body.remove(o);
-		return isFinished();
-	}
-	
-	/**
-	 * Checks for completion of the rule
-	 * @return True, if all elements in the rule body have been marked as completed
-	 */
-	public boolean isFinished(){
-		return this.body.size() == 0;
-	}
-	
-	/**
-	 * Provides access to the rule body.
-	 * Note that completing elements will remove them from the rule body.
-	 * @return An unmodifiable set of the elements in the rule body
-	 */
-	public Set<Object> getBody(){
-		return Collections.unmodifiableSet(body);
-	}
-	
+		
 	/**
 	 * Provides access to the rules head
 	 * @return The head of the rule
 	 */
-	public Object getHead(){
+	public OWLObject getHead(){
 		return head;
 	}
 	
@@ -81,14 +54,18 @@ public class Rule {
 		return res;
 	}
 	
+	public int size(){
+		return (body == null) ? 0 : body.length;
+	}
 	
 	@Override
 	public boolean equals(Object o){
 		if(o instanceof Rule){
 			Rule other = (Rule) o;
-			if(other.head.toString().equals(head.toString()) && other.body.size() == body.size()){
-				Iterator<Object> otherIter = other.body.iterator();
-				Iterator<Object> myIter = body.iterator();
+			
+			if(other.head.toString().equals(head.toString()) && other.body.length == body.length){
+				Iterator<OWLObject> otherIter = other.iterator();
+				Iterator<OWLObject> myIter = iterator();
 				while(myIter.hasNext()){
 					if(!otherIter.next().toString().equals(myIter.next().toString())) return false;
 				}
@@ -98,14 +75,30 @@ public class Rule {
 		
 		return false;
 	}
+
+	@Override
+	public Iterator<OWLObject> iterator() {
+		return new ArrayIterator(body);
+	}
+}
+
+class ArrayIterator implements Iterator<OWLObject>{
+	private final OWLObject[] array;
+	private int position;
+	
+	public ArrayIterator(OWLObject[] array){
+		this.array = array;
+		this.position = -1;
+	}
 	
 	@Override
-	public Rule clone(){
-		Object[] copyBody = new Object[body.size()];
-		Iterator<Object> iter = body.iterator();
-		for(int i = 0; i < body.size(); i++){
-			copyBody[i] = iter.next();
-		}
-		return new Rule(head, copyBody);
+	public boolean hasNext() {
+		return position < array.length - 1;
 	}
+
+	@Override
+	public OWLObject next() {
+		return array[++position];
+	}
+	
 }

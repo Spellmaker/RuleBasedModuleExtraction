@@ -17,7 +17,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import de.spellmaker.rbme.Main;
 import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
-import de.spellmaker.rbme.rule.RuleSet;
+import de.spellmaker.rbme.rule.Rule;
 import de.spellmaker.rbme.util.ModuleCheck;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
@@ -25,7 +25,7 @@ import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 public class ModuleExtractionTest {
 	private ModuleCheck mCheck;
 	private SyntacticLocalityModuleExtractor extractor;
-	private RuleSet ruleSet;
+	private Set<Rule> ruleSet;
 	private long startTime;
 	
 	@Test public void TestModuleExtraction() throws OWLOntologyCreationException{
