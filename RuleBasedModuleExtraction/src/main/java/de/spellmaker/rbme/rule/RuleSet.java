@@ -2,7 +2,6 @@ package de.spellmaker.rbme.rule;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -22,15 +21,13 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 	private Set<OWLAxiom> baseModule;
 	private Map<OWLObject, List<Integer>> ruleMap;	
 	private Set<Rule> rules;
-	//private Set<Rule> ruleSet;
 	private int pos;
 	
 	private int size = -1;
 	
 	public RuleSet(){
-		this.ruleMap = new HashMap<>(); //ruleMap;
+		this.ruleMap = new HashMap<>();
 		this.rules = new LinkedHashSet<>();
-		//this.ruleSet = new HashSet<>();
 		this.baseSignature = new LinkedHashSet<>();
 		this.baseModule = new LinkedHashSet<>();
 		this.pos = 0;
@@ -42,7 +39,6 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 		baseModule = Collections.unmodifiableSet(baseModule);
 		ruleMap = Collections.unmodifiableMap(ruleMap);
 		rules = Collections.unmodifiableSet(rules);
-		//ruleSet = null;
 	}
 	
 	public Rule getRule(int i){
@@ -55,21 +51,20 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 	}
 	
 	public void add(Rule r){
-		this.rules.add(r);
-		/*	if(r.size() > 0){
-				if(this.rules.add(r)){
-					for(OWLObject o : r){
-						List<Integer> current = ruleMap.get(o);
-						if(current == null) current = new LinkedList<>();
-						current.add(pos);
-						ruleMap.put(o, current);
-					}
-					pos++;
+		if(r.size() > 0){
+			if(this.rules.add(r)){
+				for(OWLObject o : r){
+					List<Integer> current = ruleMap.get(o);
+					if(current == null) current = new LinkedList<>();
+					current.add(pos);
+					ruleMap.put(o, current);
 				}
+				pos++;
 			}
-			else{
-				r.getHead().accept(this);
-			}*/
+		}
+		else{
+			r.getHead().accept(this);
+		}
 	}
 	
 	@Override

@@ -16,7 +16,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
-import de.spellmaker.rbme.rule.Rule;
 import de.spellmaker.rbme.rule.RuleSet;
 import de.spellmaker.rbme.util.ClassPrinter;
 import de.spellmaker.rbme.util.ModuleCheck;
@@ -29,7 +28,9 @@ public class Main {
 	public static String onto_testpath = "C:\\Users\\spellmaker\\Downloads\\ore2014_dataset\\dataset\\files\\approximated_896c66df-2415-4e7a-8a3e-aed1f56be49d_ine_roller.ttl_functional.owl";
 	
 	public static void main(String[] args) throws Exception{
-		OWLOntologyManager m = OWLManager.createOWLOntologyManager();
+		ModuleExtractionTest test = new ModuleExtractionTest();
+		test.TestModuleExtraction();
+		/*OWLOntologyManager m = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = null;
 		try{
 			ontology = m.loadOntologyFromOntologyDocument(new File(onto_path));
@@ -45,11 +46,8 @@ public class Main {
 		//addClass(signature, "http://purl.org/goodrelations/v1#BusinessFunction");
 		addClass(signature, "http://chen.moe/onto/med/Cystic_Fibrosis");
 		addClass(signature, "http://chen.moe/onto/med/Genetic_Disorder");
-		Set<Rule> rules = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
+		RuleSet rules = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
 		System.out.println("Size: " + rules.size());
-		for(Rule r : rules){
-			//System.out.println(r);
-		}
 		
 		Set<OWLAxiom> module = (new RBMExtractor()).extractModule(rules, signature);
 		System.out.println("Rule based extractor:");
@@ -100,7 +98,7 @@ public class Main {
 			System.out.println("Locality based approach passed semantic the module check");
 		else
 			System.out.println("Locality based approach failed semantic the module check: '" + testRuleBased + "' is not local");
-		
+		*/
 	}
 	
 	private static void printModule(Set<OWLAxiom> module){

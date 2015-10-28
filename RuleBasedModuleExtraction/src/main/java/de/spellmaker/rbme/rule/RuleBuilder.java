@@ -15,7 +15,7 @@ public interface RuleBuilder {
 	 * @param axioms The axioms of the source ontologie
 	 * @return A rule set managing the created rules
 	 */
-	public Set<Rule> buildRules(Set<OWLAxiom> axioms);
+	public RuleSet buildRules(Set<OWLAxiom> axioms);
 	
 	/*public static Map<OWLObject, List<Integer>> buildRuleMap(Set<Rule> rules){
 		int pos = 0;

@@ -8,7 +8,12 @@
  */
 
 // Apply the java plugin to add support for Java
+plugins{
+	id 'java'
+	id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
 apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -16,6 +21,12 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
     mavenCentral()
+}
+
+jar{
+	manifest{
+		attributes 'Main-Class': 'de.spellmaker.rbme.Main'
+	}
 }
 
 // In this section you declare the dependencies for your production and test code

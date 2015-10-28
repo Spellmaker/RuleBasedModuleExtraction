@@ -1,23 +1,18 @@
 package de.spellmaker.rbme.extractor;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-
 import de.spellmaker.rbme.rule.Rule;
 import de.spellmaker.rbme.rule.RuleSet;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -34,36 +29,33 @@ public class RBMExtractor {
 	private Queue<OWLObject> queue;
 	private OWLEntity owlThing;
 	
-
-	
-	public static StringBuilder textBuffer;
-	
 	/**
 	 * Uses the rules provided by the rule set to extract a module using the given signature
 	 * @param ruleSet A set of rules constructed by a RuleBuilder 
 	 * @param signature A set of OWL classes forming a signature
 	 * @return A set of OWL axioms forming a module for the signature
 	 */
-	public Set<OWLAxiom> extractModule(Set<Rule> rules, Set<OWLClass> signature){	
-		textBuffer = new StringBuilder();
-		textBuffer.append("ruleset: \n");
-		rules.forEach(x -> textBuffer.append(x.toString() + "\n"));
+	public Set<OWLAxiom> extractModule(RuleSet rules, Set<OWLClass> signature){	
 		//initialize the processing queue to the signature
-		OWLDataFactory factory = new OWLDataFactoryImpl();
-		owlThing = factory.getOWLThing();
 		module = new HashSet<>();
 		knownNotBottom = new HashSet<>(signature);
-		signature.stream().filter(x -> !x.equals(owlThing)).forEach(x -> module.add(new OWLDeclarationAxiomImpl(x, Collections.emptyList())));
+		
+		//Note: this filter can be dropped, if we assume that signatures do not contain owl:thing
+		signature = signature.stream().filter(x -> !x.isOWLThing()).collect(Collectors.toSet());
+		
+		signature.forEach(x -> module.add(new OWLDeclarationAxiomImpl(x, Collections.emptyList())));
 		queue = new LinkedList<>(signature);
 		
 		//OWL Thing is always assumed to be not bottom
+		OWLDataFactory factory = new OWLDataFactoryImpl();
+		owlThing = factory.getOWLThing();
 		queue.add(owlThing);
 		knownNotBottom.add(owlThing);
 
 		int[] ruleCounter = new int[rules.size()];
 		OWLObject[] ruleHeads = new OWLObject[rules.size()]; 
 		
-		/* //add base module and signature
+		//add base module and signature
 		module.addAll(rules.getBaseModule());
 		rules.getBaseSignature().forEach(x -> addQueue(x));
 		
@@ -72,47 +64,12 @@ public class RBMExtractor {
 			ruleCounter[pos] = rule.size();
 			ruleHeads[pos] = rule.getHead();
 			pos++;
-		} */
-		
-		//re-inserted for debugging reasons
-		Map<OWLObject, List<Integer>> ruleMap = new HashMap<>(); 
-		
-		int pos = 0;
-		for(Rule rule : rules){
-			//bodyless rules 
-			if(rule.size() == 0){
-				OWLObject o = rule.getHead();
-				if(o instanceof OWLClassAssertionAxiom){
-					OWLClassAssertionAxiom ax = (OWLClassAssertionAxiom) o;
-					ax.getClassExpression().getSignature().forEach(x -> addQueue(x));
-					module.add(ax);
-					//procQueue.addToModule(ax);
-				}
-				else if(o instanceof OWLObjectPropertyAssertionAxiom){
-					OWLObjectPropertyAssertionAxiom ax = (OWLObjectPropertyAssertionAxiom) o;
-					OWLObjectPropertyExpression prop = ax.getProperty();
-					prop.getSignature().forEach(x -> addQueue(x));			
-					module.add(ax);
-				}
-			}
-			else{
-				ruleCounter[pos] = rule.size();
-				ruleHeads[pos] = rule.getHead();
-				for(OWLObject o : rule){
-					List<Integer> current = ruleMap.get(o);
-					if(current == null) current = new LinkedList<>();
-					current.add(pos);
-					ruleMap.put(o, current);
-				}
-				pos++;
-			}
 		}
-		//end of debugging insertion
 		
 		//main processing loop
 		for(OWLObject front = queue.poll(); front != null; front = queue.poll()){
 			//process all rules, which have the front element in their body
-			List<Integer> matchRules = ruleMap.get(front);//rules.findRules(front);
+			List<Integer> matchRules = rules.findRules(front);
 			if(matchRules == null) continue;
 			
 			for(Integer cRule : matchRules){
@@ -121,6 +78,7 @@ public class RBMExtractor {
 				//have been found to be possibly not bottom
 				if(--ruleCounter[cRule] <= 0){
 					OWLObject head = ruleHeads[cRule];
+					
 					if(head instanceof OWLAxiom){
 						//in case the head is an axiom, add all new vocabulary from the axiom
 						//into the processing queue
