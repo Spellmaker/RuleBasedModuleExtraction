@@ -47,7 +47,7 @@ public class Main {
 		RuleSet rules = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
 		System.out.println("Size: " + rules.size());
 		for(Rule r : rules){
-			System.out.println(r);
+			//System.out.println(r);
 		}
 		
 		Set<OWLAxiom> module = (new RBMExtractor()).extractModule(rules, signature);
@@ -62,7 +62,7 @@ public class Main {
 		printModule(module2);
 		
 		ModuleCheck mCheck = new ModuleCheck(m);
-		/*for(OWLAxiom o : module){
+		for(OWLAxiom o : module){
 			if(!module2.remove(o)){
 				System.out.println("axiom '" + ClassPrinter.printAxiom(o) + "' is not in locality module");
 			}
@@ -70,7 +70,7 @@ public class Main {
 		System.out.println("Missing axioms:");
 		for(OWLAxiom o: module2){
 			System.out.println(ClassPrinter.printAxiom(o) + " " + o.getClass());
-		}*/
+		}
 		
 		OWLAxiom testRuleBased = mCheck.isSyntacticalLocalModule(ontology, module);
 		OWLAxiom testLocality = mCheck.isSyntacticalLocalModule(ontology, module2);

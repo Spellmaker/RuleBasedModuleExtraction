@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -20,18 +21,18 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 	private Set<OWLObject> baseSignature;
 	private Set<OWLAxiom> baseModule;
 	private Map<OWLObject, List<Integer>> ruleMap;	
-	private List<Rule> rules;
-	private Set<Rule> ruleSet;
+	private Set<Rule> rules;
+	//private Set<Rule> ruleSet;
 	private int pos;
 	
 	private int size = -1;
 	
 	public RuleSet(){
 		this.ruleMap = new HashMap<>(); //ruleMap;
-		this.rules = new LinkedList<>();
-		this.ruleSet = new HashSet<>();
-		this.baseSignature = new HashSet<>();
-		this.baseModule = new HashSet<>();
+		this.rules = new LinkedHashSet<>();
+		//this.ruleSet = new HashSet<>();
+		this.baseSignature = new LinkedHashSet<>();
+		this.baseModule = new LinkedHashSet<>();
 		this.pos = 0;
 	}
 	
@@ -40,8 +41,8 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 		baseSignature = Collections.unmodifiableSet(baseSignature);
 		baseModule = Collections.unmodifiableSet(baseModule);
 		ruleMap = Collections.unmodifiableMap(ruleMap);
-		rules = Collections.unmodifiableList(rules);
-		ruleSet = null;
+		rules = Collections.unmodifiableSet(rules);
+		//ruleSet = null;
 	}
 	
 	public Rule getRule(int i){
@@ -54,21 +55,21 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 	}
 	
 	public void add(Rule r){
-		if(ruleSet.add(r)){
-			if(r.size() > 0){
-				this.rules.add(r);
-				for(OWLObject o : r){
-					List<Integer> current = ruleMap.get(o);
-					if(current == null) current = new LinkedList<>();
-					current.add(pos);
-					ruleMap.put(o, current);
+		this.rules.add(r);
+		/*	if(r.size() > 0){
+				if(this.rules.add(r)){
+					for(OWLObject o : r){
+						List<Integer> current = ruleMap.get(o);
+						if(current == null) current = new LinkedList<>();
+						current.add(pos);
+						ruleMap.put(o, current);
+					}
+					pos++;
 				}
-				pos++;
 			}
 			else{
 				r.getHead().accept(this);
-			}
-		}
+			}*/
 	}
 	
 	@Override

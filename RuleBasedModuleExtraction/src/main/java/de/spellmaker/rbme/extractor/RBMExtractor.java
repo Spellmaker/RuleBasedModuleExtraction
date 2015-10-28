@@ -1,17 +1,23 @@
 package de.spellmaker.rbme.extractor;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+
 import de.spellmaker.rbme.rule.Rule;
 import de.spellmaker.rbme.rule.RuleSet;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -48,12 +54,11 @@ public class RBMExtractor {
 		//OWL Thing is always assumed to be not bottom
 		queue.add(owlThing);
 		knownNotBottom.add(owlThing);
-		
-		//index all rules by their body elements
+
 		int[] ruleCounter = new int[rules.size()];
 		OWLObject[] ruleHeads = new OWLObject[rules.size()]; 
 		
-		//add base module and signature
+		/* //add base module and signature
 		module.addAll(rules.getBaseModule());
 		rules.getBaseSignature().forEach(x -> addQueue(x));
 		
@@ -62,12 +67,47 @@ public class RBMExtractor {
 			ruleCounter[pos] = rule.size();
 			ruleHeads[pos] = rule.getHead();
 			pos++;
+		} */
+		
+		//re-inserted for debugging reasons
+		Map<OWLObject, List<Integer>> ruleMap = new HashMap<>(); 
+		
+		int pos = 0;
+		for(Rule rule : rules){
+			//bodyless rules 
+			if(rule.size() == 0){
+				OWLObject o = rule.getHead();
+				if(o instanceof OWLClassAssertionAxiom){
+					OWLClassAssertionAxiom ax = (OWLClassAssertionAxiom) o;
+					ax.getClassExpression().getSignature().forEach(x -> addQueue(x));
+					module.add(ax);
+					//procQueue.addToModule(ax);
+				}
+				else if(o instanceof OWLObjectPropertyAssertionAxiom){
+					OWLObjectPropertyAssertionAxiom ax = (OWLObjectPropertyAssertionAxiom) o;
+					OWLObjectPropertyExpression prop = ax.getProperty();
+					prop.getSignature().forEach(x -> addQueue(x));			
+					module.add(ax);
+				}
+			}
+			else{
+				ruleCounter[pos] = rule.size();
+				ruleHeads[pos] = rule.getHead();
+				for(OWLObject o : rule){
+					List<Integer> current = ruleMap.get(o);
+					if(current == null) current = new LinkedList<>();
+					current.add(pos);
+					ruleMap.put(o, current);
+				}
+				pos++;
+			}
 		}
+		//end of debugging insertion
 		
 		//main processing loop
 		for(OWLObject front = queue.poll(); front != null; front = queue.poll()){
 			//process all rules, which have the front element in their body
-			List<Integer> matchRules = rules.findRules(front);
+			List<Integer> matchRules = ruleMap.get(front);//rules.findRules(front);
 			if(matchRules == null) continue;
 			
 			for(Integer cRule : matchRules){
