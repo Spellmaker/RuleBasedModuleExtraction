@@ -32,6 +32,8 @@ public class RBMExtractor {
 	private Queue<OWLObject> queue;
 	private OWLEntity owlThing;
 	
+	public static StringBuilder textBuffer;
+	
 	
 	
 	/**
@@ -41,9 +43,13 @@ public class RBMExtractor {
 	 * @return A set of OWL axioms forming a module for the signature
 	 */
 	public Set<OWLAxiom> extractModule(Set<Rule> rules, Set<OWLClass> signature){		
+		textBuffer = new StringBuilder();
+		textBuffer.append("ruleset: \n");
+		rules.forEach(x -> textBuffer.append(x.toString() + "\n"));
 		//initialize the processing queue to the signature
 		//ProcessingQueue procQueue = new ProcessingQueue(signature);
 		OWLDataFactory factory = new OWLDataFactoryImpl();
+		
 		owlThing = factory.getOWLThing();
 		module = new HashSet<>();
 		knownNotBottom = new HashSet<>(signature);

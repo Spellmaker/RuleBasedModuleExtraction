@@ -7,6 +7,7 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.semanticweb.HermiT.Configuration.WarningMonitor;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -28,11 +29,14 @@ public class ModuleExtractionTest {
 	private Set<Rule> ruleSet;
 	private long startTime;
 	
+	private int betterRule = 0;
+	private int betterAPI = 0;
+	
 	@Test public void TestModuleExtraction() throws OWLOntologyCreationException{
 		OWLOntologyManager m = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = null;
 		try{
-			ontology = m.loadOntologyFromOntologyDocument(new File(Main.onto_path));
+			ontology = m.loadOntologyFromOntologyDocument(new File(Main.onto_testpath));
 		}
 		catch(Exception e){
 			fail("Missing ontology file '" + Main.onto_path + "'");
@@ -49,6 +53,8 @@ public class ModuleExtractionTest {
 		ruleSet =(new ELRuleBuilder()).buildRules(ontology.getAxioms());
 		testSet(new HashSet<>(), ontologySignature, -1, ontology, max);
 		System.out.println("test took " + (System.currentTimeMillis() - startTime) +  " ms");
+		System.out.println("rules were better in " + betterRule + " cases");
+		System.out.println("api was better in " + betterAPI + " cases");
 	}
 	
 	private int testSet(Set<OWLClass> currentSet, List<OWLClass> sourceSet, int largestElement, OWLOntology ontology, int max){
@@ -65,7 +71,8 @@ public class ModuleExtractionTest {
 	}
 	
 	private void testSignature(Set<OWLClass> signature, OWLOntology ontology){
-		Set<OWLAxiom> module = (new RBMExtractor()).extractModule(ruleSet, Collections.unmodifiableSet(signature));
+		RBMExtractor rbmextractor = new RBMExtractor();
+		Set<OWLAxiom> module = (rbmextractor).extractModule(ruleSet, Collections.unmodifiableSet(signature));
 		Set<OWLAxiom> module2 = extractor.extract(Collections.unmodifiableSet(signature));
 
 		if(mCheck.isSyntacticalLocalModule(ontology, module2) != null) System.out.println("owlapi module is not syntactically local module");
@@ -84,12 +91,18 @@ public class ModuleExtractionTest {
 		module.removeAll(module2);
 		module2.removeAll(tmp);
 		
-		module.forEach(x -> System.out.println("additional axiom in rule module: '" + x));
-		module2.forEach(x -> System.out.println("additional axiom in local module: '" + x));
+		//module.forEach(x -> System.out.println("additional axiom in rule module: '" + x));
+		//module2.forEach(x -> System.out.println("additional axiom in local module: '" + x));
 		
-		if(msize < m2size) System.out.println("rules found a smaller module");
-		if(m2size < msize){
-			fail("rule based module is too big; " + module.size() + " vs " + module2.size() + " with signature " + signature);
+		if(msize < m2size){
+			betterRule++;
+			System.out.println("rules found a smaller module");
+		}
+		if(m2size < msize){			
+			betterAPI++;
+			System.out.println("api found a smaller module");
+			System.out.println(rbmextractor.textBuffer);
+			fail("rule based module is too big; " + msize + " vs " + m2size + " with signature " + signature);
 		} 
 	}
 }
