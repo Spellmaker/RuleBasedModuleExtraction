@@ -98,6 +98,13 @@ public class ModuleExtractionTest {
 			betterRule++;
 			System.out.println("rules found a smaller module");
 		}
+		
+		if(signature.toString().equals("[<http://purl.org/goodrelations/v1#Offering>, owl:Thing, <http://purl.org/goodrelations/v1#QualitativeValue>, <http://purl.org/goodrelations/v1#PaymentMethodCreditCard>, <http://schema.org/Offer>, <http://purl.org/goodrelations/v1#WarrantyScope>, <http://purl.org/goodrelations/v1#QuantitativeValueFloat>, <http://schema.org/Product>, <http://purl.org/goodrelations/v1#Location>, <http://purl.org/goodrelations/v1#QuantitativeValue>, <http://purl.org/goodrelations/v1#ProductOrServiceModel>, <http://purl.org/goodrelations/v1#PaymentMethod>, <http://purl.org/goodrelations/v1#PriceSpecification>, <http://schema.org/Person>, <http://purl.org/goodrelations/v1#DayOfWeek>, <http://purl.org/goodrelations/v1#PaymentChargeSpecification>]")){
+			System.out.println("found signature matching with problematic signature");
+			System.out.println(rbmextractor.textBuffer);
+			fail("found matching signature");
+		}
+		
 		if(m2size < msize){			
 			betterAPI++;
 			System.out.println("api found a smaller module");
