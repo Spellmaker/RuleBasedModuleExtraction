@@ -1,4 +1,5 @@
 package de.spellmaker.rbme.rule;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
@@ -72,16 +73,19 @@ import org.semanticweb.owlapi.model.SWRLRule;
  */
 public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpressionVisitor{
 	private RuleSet ruleSet;
+	private Set<Rule> rules;
 	
 	public ELRuleBuilder(){
 		ruleSet = new RuleSet();
+		rules = new HashSet<>();
 	}
 	
 	@Override
-	public RuleSet buildRules(Set<OWLAxiom> axioms){
+	public Set<Rule> buildRules(Set<OWLAxiom> axioms){
 		axioms.forEach(x -> x.accept(this));
 		ruleSet.finalize();
-		return ruleSet;
+		//return ruleSet;
+		return rules;
 	}
 
 	@Override
@@ -118,6 +122,7 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	public void visit(OWLObjectIntersectionOf ce) {
 		Set<OWLClassExpression> ops = ce.getOperands();
 		ruleSet.add(new Rule(ce, ops.toArray(new OWLObject[0])));
+		rules.add(new Rule(ce, ops.toArray(new OWLObject[0])));
 		for(OWLClassExpression e : ops){
 			e.accept(this);
 		}
@@ -138,6 +143,7 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLObjectSomeValuesFrom ce) {
 		ruleSet.add(new Rule(ce, ce.getFiller(), ce.getProperty()));
+		rules.add(new Rule(ce, ce.getFiller(), ce.getProperty()));
 		ce.getFiller().accept(this);		
 	}
 
@@ -229,6 +235,7 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	public void visit(OWLSubClassOfAxiom axiom) {
 		OWLClassExpression expr = axiom.getSubClass();
 		ruleSet.add(new Rule(axiom, expr));
+		rules.add(new Rule(axiom, expr));
 		expr.accept(this);
 	}
 
@@ -307,6 +314,7 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLObjectPropertyAssertionAxiom axiom) {
 		ruleSet.add(new Rule(axiom));
+		rules.add(new Rule(axiom));
 	}
 
 	@Override
@@ -354,12 +362,14 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLClassAssertionAxiom axiom) {
 		ruleSet.add(new Rule(axiom));	
+		rules.add(new Rule(axiom));
 	}
 
 	@Override
 	public void visit(OWLEquivalentClassesAxiom axiom) {
 		for(OWLClassExpression e : axiom.getClassExpressions()){
 			ruleSet.add(new Rule(axiom, e));
+			rules.add(new Rule(axiom, e));
 			e.accept(this);
 		}
 	}

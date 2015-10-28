@@ -18,6 +18,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import de.spellmaker.rbme.Main;
 import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
+import de.spellmaker.rbme.rule.Rule;
 import de.spellmaker.rbme.rule.RuleSet;
 import de.spellmaker.rbme.util.ModuleCheck;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
@@ -26,7 +27,7 @@ import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 public class ModuleExtractionTest {
 	private ModuleCheck mCheck;
 	private SyntacticLocalityModuleExtractor extractor;
-	private RuleSet ruleSet;
+	private Set<Rule> ruleSet;
 	private long startTime;
 	
 	private int betterRule = 0;
@@ -36,7 +37,7 @@ public class ModuleExtractionTest {
 		OWLOntologyManager m = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = null;
 		try{
-			ontology = m.loadOntologyFromOntologyDocument(new File(Main.onto_path));
+			ontology = m.loadOntologyFromOntologyDocument(new File(Main.onto_testpath));
 		}
 		catch(Exception e){
 			fail("Missing ontology file '" + Main.onto_path + "'");
@@ -71,7 +72,8 @@ public class ModuleExtractionTest {
 	}
 	
 	private void testSignature(Set<OWLClass> signature, OWLOntology ontology){
-		Set<OWLAxiom> module = (new RBMExtractor()).extractModule(ruleSet, Collections.unmodifiableSet(signature));
+		RBMExtractor rbmextractor = new RBMExtractor();
+		Set<OWLAxiom> module = (rbmextractor).extractModule(ruleSet, Collections.unmodifiableSet(signature));
 		Set<OWLAxiom> module2 = extractor.extract(Collections.unmodifiableSet(signature));
 
 		if(mCheck.isSyntacticalLocalModule(ontology, module2) != null) System.out.println("owlapi module is not syntactically local module");
@@ -100,7 +102,11 @@ public class ModuleExtractionTest {
 		if(m2size < msize){			
 			betterAPI++;
 			System.out.println("api found a smaller module");
-			//fail("rule based module is too big; " + msize + " vs " + m2size + " with signature " + signature);
+			System.out.println(rbmextractor.textBuffer);
+			System.out.println();
+			System.out.println();
+			System.out.println(signature);
+			fail("rule based module is too big; " + msize + " vs " + m2size + " with signature " + signature);
 		} 
 	}
 }

@@ -34,7 +34,9 @@ public class RBMExtractor {
 	private Queue<OWLObject> queue;
 	private OWLEntity owlThing;
 	
+
 	
+	public static StringBuilder textBuffer;
 	
 	/**
 	 * Uses the rules provided by the rule set to extract a module using the given signature
@@ -42,7 +44,10 @@ public class RBMExtractor {
 	 * @param signature A set of OWL classes forming a signature
 	 * @return A set of OWL axioms forming a module for the signature
 	 */
-	public Set<OWLAxiom> extractModule(RuleSet rules, Set<OWLClass> signature){		
+	public Set<OWLAxiom> extractModule(Set<Rule> rules, Set<OWLClass> signature){	
+		textBuffer = new StringBuilder();
+		textBuffer.append("ruleset: \n");
+		rules.forEach(x -> textBuffer.append(x.toString() + "\n"));
 		//initialize the processing queue to the signature
 		OWLDataFactory factory = new OWLDataFactoryImpl();
 		owlThing = factory.getOWLThing();
@@ -111,6 +116,7 @@ public class RBMExtractor {
 			if(matchRules == null) continue;
 			
 			for(Integer cRule : matchRules){
+				if(ruleCounter[cRule] <= 0) continue;
 				//check for rule completion, that is, if all body elements 
 				//have been found to be possibly not bottom
 				if(--ruleCounter[cRule] <= 0){

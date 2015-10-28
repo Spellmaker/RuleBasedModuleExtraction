@@ -25,7 +25,8 @@ import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 
 public class Main {
-	public static String onto_path = "C:\\Users\\spellmaker\\Downloads\\ore2014_dataset\\dataset\\files\\approximated_896c66df-2415-4e7a-8a3e-aed1f56be49d_ine_roller.ttl_functional.owl";//"onto.owl";//"EL-GALEN.owl";//;
+	public static String onto_path = "onto.owl";//"EL-GALEN.owl";//;
+	public static String onto_testpath = "C:\\Users\\spellmaker\\Downloads\\ore2014_dataset\\dataset\\files\\approximated_896c66df-2415-4e7a-8a3e-aed1f56be49d_ine_roller.ttl_functional.owl";
 	
 	public static void main(String[] args) throws Exception{
 		OWLOntologyManager m = OWLManager.createOWLOntologyManager();
@@ -44,7 +45,7 @@ public class Main {
 		//addClass(signature, "http://purl.org/goodrelations/v1#BusinessFunction");
 		addClass(signature, "http://chen.moe/onto/med/Cystic_Fibrosis");
 		addClass(signature, "http://chen.moe/onto/med/Genetic_Disorder");
-		RuleSet rules = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
+		Set<Rule> rules = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
 		System.out.println("Size: " + rules.size());
 		for(Rule r : rules){
 			//System.out.println(r);
