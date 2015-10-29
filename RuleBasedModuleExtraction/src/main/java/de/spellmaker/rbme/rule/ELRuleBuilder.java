@@ -114,13 +114,13 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 
 	@Override
 	public void visit(OWLClass ce) {
-		ruleSet.add(new Rule(null, new OWLDeclarationAxiomImpl(ce, Collections.emptyList()), ce));
+		ruleSet.add(new Rule(ruleSet, null, new OWLDeclarationAxiomImpl(ce, Collections.emptyList()), ce));
 	}
 
 	@Override
 	public void visit(OWLObjectIntersectionOf ce) {
 		Set<OWLClassExpression> ops = ce.getOperands();
-		ruleSet.add(new Rule(ce, null, ops.toArray(new OWLObject[0])));
+		ruleSet.add(new Rule(ruleSet, ce, null, ops.toArray(new OWLObject[0])));
 		for(OWLClassExpression e : ops){
 			e.accept(this);
 		}
@@ -140,8 +140,8 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 
 	@Override
 	public void visit(OWLObjectSomeValuesFrom ce) {
-		ruleSet.add(new Rule(null, new OWLDeclarationAxiomImpl((OWLEntity) ce.getProperty(), Collections.emptyList()), ce.getProperty()));
-		ruleSet.add(new Rule(ce, null, ce.getFiller(), ce.getProperty()));
+		ruleSet.add(new Rule(ruleSet, null, new OWLDeclarationAxiomImpl((OWLEntity) ce.getProperty(), Collections.emptyList()), ce.getProperty()));
+		ruleSet.add(new Rule(ruleSet, ce, null, ce.getFiller(), ce.getProperty()));
 		ce.getFiller().accept(this);		
 	}
 
@@ -232,7 +232,7 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLSubClassOfAxiom axiom) {
 		OWLClassExpression expr = axiom.getSubClass();
-		ruleSet.add(new Rule(null, axiom, expr));
+		ruleSet.add(new Rule(ruleSet, null, axiom, expr));
 		expr.accept(this);
 	}
 
@@ -310,7 +310,7 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 
 	@Override
 	public void visit(OWLObjectPropertyAssertionAxiom axiom) {
-		ruleSet.add(new Rule(null, axiom));
+		ruleSet.add(new Rule(ruleSet, null, axiom));
 	}
 
 	@Override
@@ -357,13 +357,13 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 
 	@Override
 	public void visit(OWLClassAssertionAxiom axiom) {
-		ruleSet.add(new Rule(null, axiom));	
+		ruleSet.add(new Rule(ruleSet, null, axiom));	
 	}
 
 	@Override
 	public void visit(OWLEquivalentClassesAxiom axiom) {
 		for(OWLClassExpression e : axiom.getClassExpressions()){
-			ruleSet.add(new Rule(null, axiom, e));
+			ruleSet.add(new Rule(ruleSet, null, axiom, e));
 			e.accept(this);
 		}
 	}

@@ -1,5 +1,6 @@
 package de.spellmaker.rbme.util;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,7 +40,7 @@ public class ModuleCheck {
 	 * @param module A module
 	 * @return null, if the module is correct or the axiom for which the module is not correct
 	 */
-	public OWLAxiom isSyntacticalLocalModule(OWLOntology ontology, Set<OWLAxiom> module){
+	public OWLAxiom isSyntacticalLocalModule(OWLOntology ontology, Collection<OWLAxiom> module){
 		return check(ontology, module, locality2);
 	}
 	
@@ -49,11 +50,11 @@ public class ModuleCheck {
 	 * @param module A module
 	 * @return null, if the module is correct or the axiom for which the module is not correct
 	 */
-	public OWLAxiom isSemanticalLocalModule(OWLOntology ontology, Set<OWLAxiom> module){
+	public OWLAxiom isSemanticalLocalModule(OWLOntology ontology, Collection<OWLAxiom> module){
 		return check(ontology, module, locality);
 	}
 	
-	private OWLAxiom check(OWLOntology ontology, Set<OWLAxiom> module, LocalityEvaluator evaluator){
+	private OWLAxiom check(OWLOntology ontology, Collection<OWLAxiom> module, LocalityEvaluator evaluator){
 		Set<OWLEntity> signature = new HashSet<>();
 		module.forEach(x -> signature.addAll(x.getSignature()));
 		for(OWLAxiom axiom : ontology.getAxioms()){

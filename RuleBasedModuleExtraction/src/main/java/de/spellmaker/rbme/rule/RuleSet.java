@@ -9,19 +9,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.util.OWLObjectVisitorAdapter;
 
 public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
-	private Set<OWLObject> baseSignature;
-	private Set<OWLAxiom> baseModule;
-	private Map<OWLObject, List<Integer>> ruleMap;	
+	private Set<Integer> baseSignature;
+	private Set<Integer> baseModule;
+	private Map<Integer, List<Integer>> ruleMap;	
+	
 	private Set<Rule> rules;
 	private int pos;
+	
+	private Map<OWLObject, Integer> objToInt;
+	private Map<Integer, OWLObject> intToObj;
+	private int objectCount;
 	
 	private int size = -1;
 	
@@ -31,6 +34,28 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 		this.baseSignature = new LinkedHashSet<>();
 		this.baseModule = new LinkedHashSet<>();
 		this.pos = 0;
+		
+		objectCount = 0;
+		objToInt = new HashMap<>();
+		intToObj = new HashMap<>();
+	}
+	
+	public int addObject(OWLObject o){
+		Integer res = objToInt.get(o);
+		if(res == null){
+			if(o.isTopEntity()){
+				System.out.println("found top");
+			}
+			objToInt.put(o, objectCount);
+			intToObj.put(objectCount, o);
+			res = objectCount;
+			objectCount++;
+		}
+		return res;
+	}
+	
+	public OWLObject getObject(int i){
+		return intToObj.get(i);
 	}
 	
 	public void finalize(){
@@ -53,7 +78,7 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 	public void add(Rule r){
 		if(r.size() > 0){
 			if(this.rules.add(r)){
-				for(OWLObject o : r){
+				for(Integer o : r){
 					List<Integer> current = ruleMap.get(o);
 					if(current == null) current = new LinkedList<>();
 					current.add(pos);
@@ -62,29 +87,28 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 				pos++;
 			}
 		}
-		else if(r.getHead() != null){
-			r.getHead().accept(this);
+		else if(r.getHead() != -1){
+			intToObj.get(r.getHead()).accept(this);
 		}
 	}
 	
 	@Override
 	public void visit(OWLClassAssertionAxiom ax){
-		baseSignature.addAll(ax.getClassExpression().getSignature());
-		baseModule.add(ax);
+		ax.getClassExpression().getSignature().forEach(x -> baseSignature.add(addObject(x)));
+		baseModule.add(addObject(ax));
 	}
 	
 	@Override
 	public void visit(OWLObjectPropertyAssertionAxiom ax){
-		OWLObjectPropertyExpression prop = ax.getProperty();
-		baseSignature.addAll(prop.getSignature());
-		baseModule.add(ax);
+		ax.getProperty().getSignature().forEach(x -> baseSignature.add(addObject(x)));
+		baseModule.add(addObject(ax));
 	}
 	
-	public Set<OWLAxiom> getBaseModule(){
+	public Set<Integer> getBaseModule(){
 		return baseModule;
 	}
 	
-	public Set<OWLObject> getBaseSignature(){
+	public Set<Integer> getBaseSignature(){
 		return baseSignature;
 	}
 	
@@ -92,7 +116,7 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 		return size;
 	}
 	
-	public List<Integer> findRules(OWLObject o){
+	public List<Integer> findRules(int o){
 		return ruleMap.get(o);
 	}
 

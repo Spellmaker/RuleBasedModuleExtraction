@@ -1,5 +1,6 @@
 package de.spellmaker.rbme;
 import java.io.File;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +50,7 @@ public class Main {
 		RuleSet rules = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
 		System.out.println("Size: " + rules.size());
 		
-		Set<OWLAxiom> module = (new RBMExtractor()).extractModule(rules, signature);
+		Collection<OWLAxiom> module = (new RBMExtractor()).extractModule(rules, signature);
 		System.out.println("Rule based extractor:");
 		printModule(module);
 		System.out.println();
@@ -101,7 +102,7 @@ public class Main {
 		*/
 	}
 	
-	private static void printModule(Set<OWLAxiom> module){
+	private static void printModule(Collection<OWLAxiom> module){
 		System.out.println("Module size: " + module.size());
 		for(OWLAxiom a : module){
 			if(a instanceof OWLDeclarationAxiom) continue;
