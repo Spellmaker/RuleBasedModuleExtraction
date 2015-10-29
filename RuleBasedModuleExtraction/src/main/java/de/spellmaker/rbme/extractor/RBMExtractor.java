@@ -53,6 +53,7 @@ public class RBMExtractor {
 
 		int[] ruleCounter = new int[rules.size()];
 		OWLObject[] ruleHeads = new OWLObject[rules.size()]; 
+		OWLAxiom[] ruleAxioms = new OWLAxiom[rules.size()];
 		
 		//add base module and signature
 		module.addAll(rules.getBaseModule());
@@ -62,6 +63,7 @@ public class RBMExtractor {
 		for(Rule rule : rules){
 			ruleCounter[pos] = rule.size();
 			ruleHeads[pos] = rule.getHead();
+			ruleAxioms[pos] = rule.getAxiom();
 			pos++;
 		}
 		
@@ -78,12 +80,11 @@ public class RBMExtractor {
 				if(--ruleCounter[cRule] <= 0){
 					OWLObject head = ruleHeads[cRule];
 					
-					if(head instanceof OWLAxiom){
+					if(head == null){
 						//in case the head is an axiom, add all new vocabulary from the axiom
 						//into the processing queue
-						OWLAxiom axiom = (OWLAxiom) head;
-						axiom.getSignature().forEach(x -> addQueue(x));
-						module.add(axiom);
+						ruleAxioms[cRule].getSignature().forEach(x -> addQueue(x));
+						module.add(ruleAxioms[cRule]);
 					}
 					else{
 						//in case of an intermediate rule, add the head

@@ -14,10 +14,10 @@ import de.spellmaker.rbme.util.ClassPrinter;
 public class Rule implements Iterable<OWLObject>{
 	private final OWLObject[] body;
 	private final OWLObject head;
+	private final OWLAxiom axiom;
 	
-	public Rule(OWLObject head, OWLObject ...body){
-		if(head == null) throw new NullPointerException("Rule head cannot be null");
-		
+	public Rule(OWLObject head, OWLAxiom axiom, OWLObject ...body){
+		this.axiom = axiom;
 		this.head = head;
 		if(body != null){
 			this.body = new OWLObject[body.length];
@@ -26,6 +26,10 @@ public class Rule implements Iterable<OWLObject>{
 		else{
 			this.body = null;
 		}
+	}
+	
+	public OWLAxiom getAxiom(){
+		return axiom;
 	}
 		
 	/**
@@ -53,7 +57,9 @@ public class Rule implements Iterable<OWLObject>{
 	
 	@Override
 	public int hashCode(){
-		int res = head.hashCode();
+		int res = 0;
+		if(head != null) res += head.hashCode();
+		if(axiom != null) res += axiom.hashCode();
 		for(Object o : body) res += o.hashCode();
 		return res;
 	}
@@ -67,7 +73,12 @@ public class Rule implements Iterable<OWLObject>{
 		if(o instanceof Rule){
 			Rule other = (Rule) o;
 			
-			if(other.head.toString().equals(head.toString()) && other.body.length == body.length){
+			boolean res = (other.head == null && head == null) || 
+					(other.head != null && head != null && other.head.toString().equals(head.toString()));
+			res = res && (other.axiom == null && axiom == null) ||
+					(other.axiom != null && axiom != null && other.axiom.toString().equals(axiom.toString()));
+			
+			if(res && other.body.length == body.length){
 				Iterator<OWLObject> otherIter = other.iterator();
 				Iterator<OWLObject> myIter = iterator();
 				while(myIter.hasNext()){

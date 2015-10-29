@@ -62,7 +62,7 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 				pos++;
 			}
 		}
-		else{
+		else if(r.getHead() != null){
 			r.getHead().accept(this);
 		}
 	}
