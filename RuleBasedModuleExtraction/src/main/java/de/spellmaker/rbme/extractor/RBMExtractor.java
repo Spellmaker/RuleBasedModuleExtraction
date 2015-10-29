@@ -12,7 +12,6 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 import de.spellmaker.rbme.rule.Rule;
 import de.spellmaker.rbme.rule.RuleSet;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -99,11 +98,6 @@ public class RBMExtractor {
 	private boolean addQueue(OWLObject o){
 		//add the entity to the list of those known to be possibly not bottom
 		if(knownNotBottom.add(o)){
-			//only if it is actually new knowledge process further
-			if(o instanceof OWLClass || o instanceof OWLObjectProperty){
-				//add declarations for classes and properties to the module
-				module.add(new OWLDeclarationAxiomImpl((OWLEntity)o, Collections.emptyList()));
-			}
 			//add the entity to the processing queue
 			return queue.add(o);
 		}

@@ -1,4 +1,5 @@
 package de.spellmaker.rbme.rule;
+import java.util.Collections;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
@@ -27,6 +28,7 @@ import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointDataPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointUnionAxiom;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentDataPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
@@ -63,6 +65,8 @@ import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.SWRLRule;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDeclarationAxiomImpl;
 
 /**
  * EL implementation of the RuleBuilder interface.
@@ -110,8 +114,7 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 
 	@Override
 	public void visit(OWLClass ce) {
-		// TODO Auto-generated method stub
-		
+		ruleSet.add(new Rule(new OWLDeclarationAxiomImpl(ce, Collections.emptyList()), ce));
 	}
 
 	@Override
@@ -137,6 +140,7 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 
 	@Override
 	public void visit(OWLObjectSomeValuesFrom ce) {
+		ruleSet.add(new Rule(new OWLDeclarationAxiomImpl((OWLEntity) ce.getProperty(), Collections.emptyList()), ce.getProperty()));
 		ruleSet.add(new Rule(ce, ce.getFiller(), ce.getProperty()));
 		ce.getFiller().accept(this);		
 	}
