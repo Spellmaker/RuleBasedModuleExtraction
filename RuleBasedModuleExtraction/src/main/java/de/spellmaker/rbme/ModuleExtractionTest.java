@@ -68,8 +68,6 @@ public class ModuleExtractionTest {
 	}
 	
 	private void testSignature(Set<OWLClass> signature, OWLOntology ontology){
-		System.out.println("new extraction");
-		System.out.println("signature is " + signature);
 		RBMExtractor rbmextractor = new RBMExtractor();
 		List<OWLAxiom> module = (rbmextractor).extractModule(ruleSet, Collections.unmodifiableSet(signature));
 		Set<OWLAxiom> module2 = extractor.extract(Collections.unmodifiableSet(signature));

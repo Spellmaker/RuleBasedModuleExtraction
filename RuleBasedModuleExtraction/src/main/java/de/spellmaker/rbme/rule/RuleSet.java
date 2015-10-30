@@ -43,9 +43,6 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 	public int addObject(OWLObject o){
 		Integer res = objToInt.get(o);
 		if(res == null){
-			if(o.isTopEntity()){
-				System.out.println("found top");
-			}
 			objToInt.put(o, objectCount);
 			intToObj.put(objectCount, o);
 			res = objectCount;
@@ -89,6 +86,9 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 		}
 		else if(r.getHead() != -1){
 			intToObj.get(r.getHead()).accept(this);
+		}
+		else{
+			intToObj.get(r.getAxiom()).accept(this);
 		}
 	}
 	

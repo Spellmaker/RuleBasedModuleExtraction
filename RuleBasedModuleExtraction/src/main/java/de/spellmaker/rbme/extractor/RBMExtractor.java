@@ -79,7 +79,6 @@ public class RBMExtractor {
 		
 		//main processing loop
 		for(Integer front = queue.poll(); front != null; front = queue.poll()){
-			System.out.println("loop");
 			//process all rules, which have the front element in their body
 			List<Integer> matchRules = rules.findRules(front);
 			if(matchRules == null) continue;
