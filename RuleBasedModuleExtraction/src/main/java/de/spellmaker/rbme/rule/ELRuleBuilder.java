@@ -1,5 +1,8 @@
 package de.spellmaker.rbme.rule;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
@@ -76,14 +79,17 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDeclarationAxiomImpl;
  */
 public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpressionVisitor{
 	private RuleSet ruleSet;
+	private List<OWLObject> unknownObjects;
 	
 	public ELRuleBuilder(){
 		ruleSet = new RuleSet();
+		unknownObjects = new LinkedList<>();
 	}
 	
 	@Override
 	public RuleSet buildRules(Set<OWLAxiom> axioms){
 		axioms.forEach(x -> x.accept(this));
+		
 		ruleSet.finalize();
 		return ruleSet;
 	}
@@ -91,30 +97,31 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLAnnotationAssertionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLSubAnnotationPropertyOfAxiom axiom) {
 		// TODO Auto-generated method stub
+		unknownObjects.add(axiom);
 		
 	}
 
 	@Override
 	public void visit(OWLAnnotationPropertyDomainAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLAnnotationPropertyRangeAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLClass ce) {
-		ruleSet.add(new Rule(null, new OWLDeclarationAxiomImpl(ce, Collections.emptyList()), ce));
+		if(!ce.isTopEntity()) ruleSet.add(new Rule(null, new OWLDeclarationAxiomImpl(ce, Collections.emptyList()), ce));
 	}
 
 	@Override
@@ -129,13 +136,13 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLObjectUnionOf ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLObjectComplementOf ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
@@ -148,85 +155,85 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLObjectAllValuesFrom ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLObjectHasValue ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLObjectMinCardinality ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLObjectExactCardinality ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLObjectMaxCardinality ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLObjectHasSelf ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLObjectOneOf ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLDataSomeValuesFrom ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLDataAllValuesFrom ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLDataHasValue ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLDataMinCardinality ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLDataExactCardinality ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLDataMaxCardinality ce) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(ce);
 	}
 
 	@Override
 	public void visit(OWLDeclarationAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		//Ignore OWLDeclarationAxioms, they are added through other rules
 	}
 
 	@Override
@@ -239,73 +246,73 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLNegativeObjectPropertyAssertionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLAsymmetricObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLReflexiveObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLDisjointClassesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLDataPropertyDomainAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLObjectPropertyDomainAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLEquivalentObjectPropertiesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLNegativeDataPropertyAssertionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLDifferentIndividualsAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLDisjointDataPropertiesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLDisjointObjectPropertiesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLObjectPropertyRangeAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
@@ -316,43 +323,43 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLFunctionalObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLSubObjectPropertyOfAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		//unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLDisjointUnionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLSymmetricObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLDataPropertyRangeAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLFunctionalDataPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLEquivalentDataPropertiesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
@@ -371,66 +378,71 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLDataPropertyAssertionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLTransitiveObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLIrreflexiveObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLSubDataPropertyOfAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLInverseFunctionalObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLSameIndividualAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLSubPropertyChainOfAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		//unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLInverseObjectPropertiesAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLHasKeyAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(OWLDatatypeDefinitionAxiom axiom) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(axiom);
 	}
 
 	@Override
 	public void visit(SWRLRule rule) {
 		// TODO Auto-generated method stub
-		
+		unknownObjects.add(rule);
+	}
+
+	@Override
+	public Collection<OWLObject> unknownObjects() {
+		return unknownObjects;
 	}
 }

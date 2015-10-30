@@ -47,7 +47,9 @@ public class ModuleExtractionTest {
 		
 		startTime = System.currentTimeMillis();
 		extractor = new SyntacticLocalityModuleExtractor(m, ontology, ModuleType.BOT);
+
 		ruleSet =(new ELRuleBuilder()).buildRules(ontology.getAxioms());
+			
 		testSet(new HashSet<>(), ontologySignature, -1, ontology, max);
 		System.out.println("test took " + (System.currentTimeMillis() - startTime) +  " ms");
 		System.out.println("rules were better in " + betterRule + " cases");
