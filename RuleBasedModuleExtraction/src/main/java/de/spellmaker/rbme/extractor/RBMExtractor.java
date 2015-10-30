@@ -87,6 +87,9 @@ public class RBMExtractor {
 						module.add(ruleAxioms[cRule]);
 					}
 					else{
+						if(head instanceof OWLAxiom){
+							System.out.println("this is awkward...");
+						}
 						//in case of an intermediate rule, add the head
 						addQueue(head);
 					}

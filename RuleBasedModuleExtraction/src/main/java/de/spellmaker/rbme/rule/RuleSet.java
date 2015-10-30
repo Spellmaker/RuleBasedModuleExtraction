@@ -65,6 +65,9 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 		else if(r.getHead() != null){
 			r.getHead().accept(this);
 		}
+		else{
+			r.getAxiom().accept(this);
+		}
 	}
 	
 	@Override
