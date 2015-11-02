@@ -14,6 +14,7 @@ public class SignatureGenerator {
 			tc.method(currentSet, ontology);
 			
 			max = testSet(tc, currentSet, sourceSet, i, ontology, max - 1);
+			if(max < 0) break;
 			currentSet.remove(sourceSet.get(i));
 		}
 		return max;

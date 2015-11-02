@@ -14,5 +14,5 @@ import de.spellmaker.rbme.OntologiePaths;
 })
 public class TestSuite {
 	public static final int max_cases = 10;
-	public static final String onto_testpath = OntologiePaths.contest1;	
+	public static final String onto_testpath = OntologiePaths.galen;	
 }
