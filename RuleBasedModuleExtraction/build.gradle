@@ -13,7 +13,12 @@ plugins{
 	id 'com.github.johnrengelman.shadow' version '1.2.2'
 }
 apply plugin: 'java'
+apply plugin: 'maven'
 apply plugin: 'com.github.johnrengelman.shadow'
+
+group = 'spellmaker'
+// artifactId is taken by default, from folder name
+version = '0.1-SNAPSHOT'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
