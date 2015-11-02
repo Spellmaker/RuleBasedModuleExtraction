@@ -13,6 +13,6 @@ import de.spellmaker.rbme.OntologiePaths;
 	RuleGenerationTest.class
 })
 public class TestSuite {
-	public static final int max_cases = 10;
+	public static final int max_cases = 1000;
 	public static final String onto_testpath = OntologiePaths.contest1;	
 }
