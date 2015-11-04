@@ -1,4 +1,4 @@
-package de.spellmaker.rbme.test.util;
+
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLClass;

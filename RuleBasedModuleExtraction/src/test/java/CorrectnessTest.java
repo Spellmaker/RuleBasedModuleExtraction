@@ -1,4 +1,4 @@
-package de.spellmaker.rbme.test;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,8 +17,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
 import de.spellmaker.rbme.rule.RuleSet;
-import de.spellmaker.rbme.test.util.SignatureGenerator;
-import de.spellmaker.rbme.test.util.SignatureTest;
 import de.spellmaker.rbme.util.ModuleCheck;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;

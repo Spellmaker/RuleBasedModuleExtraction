@@ -7,3 +7,8 @@ EL-GALEN.owl
 onto.owl
 out.csv
 pom-default.xml
+/build/classes/
+/build/dependency-cache/
+/build/reports/
+/build/test-results/
+/build/tmp/

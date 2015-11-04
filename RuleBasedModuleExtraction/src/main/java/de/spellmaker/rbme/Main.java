@@ -33,7 +33,6 @@ import de.spellmaker.rbme.evaluation.OntologieData;
 import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
 import de.spellmaker.rbme.rule.RuleSet;
-import de.spellmaker.rbme.test.TestSuite;
 import de.spellmaker.rbme.util.ClassPrinter;
 import de.spellmaker.rbme.util.ModuleCheck;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -51,7 +50,7 @@ public class Main {
 		//ontologies.add(new File(OntologiePaths.contest1));
 		//ontologies.add(new File("onto.owl"));
 		System.out.println("[INFO] Adding ore el ontologies");
-		ontologies.addAll(getEL_ORE("C:\\Users\\spellmaker\\Downloads\\ore2014_dataset\\dataset\\"));
+		ontologies.addAll(getEL_ORE(args[0]));
 		System.out.println("[INFO] Collected " + ontologies.size() + " ontologies");
 		
 		//set test iteration values
