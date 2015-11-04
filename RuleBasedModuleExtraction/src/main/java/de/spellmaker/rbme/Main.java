@@ -36,6 +36,24 @@ public class Main {
 	public static String onto_path = "onto.owl";//"EL-GALEN.owl";//;
 	public static String onto_testpath = "C:\\Users\\spellmaker\\Downloads\\ore2014_dataset\\dataset\\files\\approximated_896c66df-2415-4e7a-8a3e-aed1f56be49d_ine_roller.ttl_functional.owl";
 	private final static boolean doChecks = true;
+	
+	private static void startProgress(){
+		System.out.print("00%");
+	}
+	
+	private static void endProgress(){
+		System.out.println("");
+	}
+	
+	private static void showProgress(int current, int max){
+		double progress = (current * 100.0) / max;
+		String s = "" + Math.round(progress);
+		if(s.length() < 2) s = "0" + s;
+		
+		
+		System.out.print("\r" + s + "%");
+	}
+	
 	public static void main(String[] args) throws Exception{
 		
 		List<File> ontologies = new ArrayList<>();
@@ -68,12 +86,13 @@ public class Main {
 		for(int index = 0; index < max_onto; index++){
 			OWLOntologyManager m = OWLManager.createOWLOntologyManager();
 			if(doChecks) mCheck = new ModuleCheck(m);
-			System.out.println("[INFO] processing ontologie '" + ontologies.get(index) + "'");
+			System.out.println("[INFO] (" + index + "/" + max_onto + ") processing ontologie '" + ontologies.get(index) + "'");
 			OntologieData odata = new OntologieData();
 			ontoData[index] = odata;
 			startTime = System.currentTimeMillis();
 			OWLOntology ontology = m.loadOntologyFromOntologyDocument(ontologies.get(index));
 			endTime = System.currentTimeMillis();
+			System.out.println("[INFO] ontologie size is " + ontology.getAxiomCount());
 			
 			odata.iri = ontology.getOntologyID().toString();
 			odata.file = ontologies.get(index).toString();
@@ -102,7 +121,9 @@ public class Main {
 			//check the module extractions on correctness?
 			if(doChecks){
 				System.out.println("[INFO] performing correctness and size tests");
+				startProgress();
 				for(int i = 0; i < ontologySignature.size(); i++){
+					showProgress(i, ontologySignature.size());
 					OWLClass element = ontologySignature.get(i);
 					Set<OWLClass> sign = new HashSet<>();
 					sign.add(element);
@@ -134,9 +155,12 @@ public class Main {
 					}
 				}
 			}
+			endProgress();
 			
 			System.out.println("[INFO] processing owlapi");
+			startProgress();
 			for(int iteration = min_iter; iteration < max_iter; iteration += step_iter){
+				showProgress(iteration, max_iter);
 				startTime = System.currentTimeMillis();
 				for(int i = 0; i < ontologySignature.size(); i++){
 					OWLClass element = ontologySignature.get(i);
@@ -150,9 +174,12 @@ public class Main {
 				
 				owlapi_results[index][(iteration - min_iter) / step_iter] = endTime - startTime;
 			}
+			endProgress();
 			
 			System.out.println("[INFO] processing rbme");
+			startProgress();
 			for(int iteration = min_iter; iteration < max_iter; iteration += step_iter){
+				showProgress(iteration, max_iter);
 				startTime = System.currentTimeMillis();
 				for(int i = 0; i < ontologySignature.size(); i++){
 					OWLClass element = ontologySignature.get(i);
@@ -167,6 +194,7 @@ public class Main {
 				rbme_results[index][(iteration - min_iter) / step_iter] = endTime - startTime;
 			}
 		}
+		endProgress();
 		
 		System.out.println("[INFO] building data file");
 		
