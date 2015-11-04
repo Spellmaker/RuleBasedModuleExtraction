@@ -17,7 +17,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
 import de.spellmaker.rbme.rule.RuleSet;
-import de.spellmaker.rbme.util.ClassPrinter;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 

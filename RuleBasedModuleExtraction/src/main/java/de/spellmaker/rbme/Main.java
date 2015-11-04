@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -19,13 +18,9 @@ import java.util.Scanner;
 import java.util.Set;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
@@ -33,9 +28,7 @@ import de.spellmaker.rbme.evaluation.OntologieData;
 import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
 import de.spellmaker.rbme.rule.RuleSet;
-import de.spellmaker.rbme.util.ClassPrinter;
 import de.spellmaker.rbme.util.ModuleCheck;
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 
@@ -303,7 +296,7 @@ public class Main {
 		*/
 	}
 	
-	private static void printModule(Set<OWLAxiom> module){
+	/*private static void printModule(Set<OWLAxiom> module){
 		System.out.println("Module size: " + module.size());
 		for(OWLAxiom a : module){
 			if(a instanceof OWLDeclarationAxiom) continue;
@@ -316,7 +309,7 @@ public class Main {
 	private static void addClass(Set<OWLClass> signature, String iri){
 		signature.add(new OWLClassImpl(IRI.create(iri)));
 	}
-	
+	*/
 	private static List<File> getEL_ORE(String basepath){
 		Path list = Paths.get("orefiles.txt");
 		if(Files.exists(list)){	
