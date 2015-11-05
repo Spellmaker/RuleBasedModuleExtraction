@@ -1,4 +1,4 @@
-package de.spellmaker.rbme;
+package de.spellmaker.rbme.ore;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -102,6 +102,10 @@ public class ORELoader {
 		BufferedReader br = new BufferedReader(new FileReader(fileorder));
 		String line = br.readLine();
 		while(line != null){
+			if(!Files.exists(filePath.resolve(line))){
+				System.out.println("[WARN] File not found: '" + line + "'");
+				continue;
+			}
 			files.add(filePath.resolve(line).toFile());
 			line = br.readLine();
 		}

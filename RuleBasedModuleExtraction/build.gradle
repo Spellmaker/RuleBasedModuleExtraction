@@ -30,7 +30,7 @@ repositories {
 
 jar{
 	manifest{
-		attributes 'Main-Class': 'de.spellmaker.rbme.Main'
+		attributes 'Main-Class': 'de.spellmaker.rbme.Evaluation'
 	}
 }
 

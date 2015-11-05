@@ -3,6 +3,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -11,11 +12,21 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import de.spellmaker.rbme.evaluation.OntologieData;
 import de.spellmaker.rbme.evaluation.WorkerThread;
+import de.spellmaker.rbme.ore.OREFilter;
+import de.spellmaker.rbme.ore.ORELoader;
+import de.spellmaker.rbme.ore.OREManager;
 
 public class Evaluation {	
 	
 	public static void main(String[] args) throws Exception{
-		List<File> ontologies = new ArrayList<>();
+		OREManager manager = new OREManager();
+		manager.load(Paths.get(args[0]), "el\\classification", "el\\instantiation", "el\\consistency", "dl\\classification", "dl\\instantiation", "dl\\consistency");		
+		//(x -> Integer.parseInt(x[0]) >= 0 && Integer.parseInt(x[1]) <= 100)
+		System.out.println("found " + manager.filterOntologies((x -> Integer.parseInt(x[0])!= Integer.parseInt(x[1])), "abox_size", "abox_size_incl").size() + " ontologies with less than 1000 axioms and a small abox");
+		
+		
+		
+		/*List<File> ontologies = new ArrayList<>();
 		//add all ontologies
 		//ontologies.add(new File(OntologiePaths.contest1));
 		//ontologies.add(new File("onto.owl"));
@@ -30,7 +41,7 @@ public class Evaluation {
 		int max_axioms = 100000;
 		int min_axioms = 10000;
 		
-		ExecutorService pool = Executors.newFixedThreadPool(2);
+		ExecutorService pool = Executors.newFixedThreadPool(4);
 		List<Future<OntologieData>> futures = new ArrayList<>(max_onto);
 		for(int i = 0; i < max_onto; i++){
 			WorkerThread current = new WorkerThread(iteration_count, ontologies.get(i), false, min_axioms, max_axioms);
@@ -99,7 +110,7 @@ public class Evaluation {
 				scan.close();
 			}
 		}
-		System.out.println("[INFO] evaluation finished");
+		System.out.println("[INFO] evaluation finished");*/
 	}
 
 }
