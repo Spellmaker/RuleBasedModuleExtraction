@@ -10,4 +10,7 @@ public class OntologieData {
 	public boolean passedCorrectnessOWLAPI;
 	public boolean passedCorrectnessRBME;
 	public boolean passedSize;
+	public int iterations;
+	public long owlapi_result;
+	public long rbme_result;
 }

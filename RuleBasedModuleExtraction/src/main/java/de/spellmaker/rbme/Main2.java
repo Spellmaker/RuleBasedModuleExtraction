@@ -25,10 +25,10 @@ import de.spellmaker.rbme.util.ModuleCheck;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 
-public class Main {
+public class Main2 {
 	public static String onto_path = "onto.owl";//"EL-GALEN.owl";//;
 	public static String onto_testpath = "C:\\Users\\spellmaker\\Downloads\\ore2014_dataset\\dataset\\files\\approximated_896c66df-2415-4e7a-8a3e-aed1f56be49d_ine_roller.ttl_functional.owl";
-	private final static boolean doChecks = true;
+	private final static boolean doChecks = false;
 	
 	private static void startProgress(){
 		System.out.print("00%");
@@ -58,19 +58,15 @@ public class Main {
 		System.out.println("[INFO] Collected " + ontologies.size() + " ontologies");
 		
 		//set test iteration values
-		int min_iter = 100;//1000;
-		int max_iter = 1000;//10000;
-		int step_iter = 50;//100;
+		int iteration_count = 100000;
 		
 		int max_onto = 10; //ontologies.size();
 		
-		//derived values
-		int values = (max_iter - min_iter) / step_iter;
-		
 		//initialize evaluation data structures
 		OntologieData[] ontoData = new OntologieData[ontologies.size()];
-		long owlapi_results[][] = new long[ontologies.size()][values];
-		long rbme_results[][] = new long[ontologies.size()][values];
+		long owlapi_results[] = new long[ontologies.size()];
+		long rbme_results[] = new long[ontologies.size()];
+		int iters[] = new int[ontologies.size()];
 		long startTime = 0;
 		long endTime = 0;
 
@@ -147,53 +143,42 @@ public class Main {
 						odata.passedSize = false;
 					}
 				}
+				endProgress();
 			}
-			endProgress();
 			
+			iters[index] = iteration_count / ontologySignature.size();
 			System.out.println("[INFO] processing owlapi");
-			startProgress();
-			for(int iteration = min_iter; iteration < max_iter; iteration += step_iter){
-				showProgress(iteration, max_iter);
-				startTime = System.currentTimeMillis();
-				for(int i = 0; i < ontologySignature.size(); i++){
-					OWLClass element = ontologySignature.get(i);
+			startTime = System.currentTimeMillis();
+			for(int i = 0; i < iteration_count / ontologySignature.size(); i++){
+				for(int j = 0; j < ontologySignature.size(); j++){
+					OWLClass element = ontologySignature.get(j);
 					Set<OWLEntity> sign = new HashSet<>();
 					sign.add(element);
-					for(int loop = 0; loop < iteration; loop++){
-						extractor.extract(sign);
-					}
+					extractor.extract(sign);
 				}
-				endTime = System.currentTimeMillis();
-				
-				owlapi_results[index][(iteration - min_iter) / step_iter] = endTime - startTime;
 			}
-			endProgress();
+			endTime = System.currentTimeMillis();
+			owlapi_results[index] = endTime - startTime;
 			
 			System.out.println("[INFO] processing rbme");
-			startProgress();
-			for(int iteration = min_iter; iteration < max_iter; iteration += step_iter){
-				showProgress(iteration, max_iter);
-				startTime = System.currentTimeMillis();
-				for(int i = 0; i < ontologySignature.size(); i++){
-					OWLClass element = ontologySignature.get(i);
+			startTime = System.currentTimeMillis();
+			for(int i = 0; i < iteration_count / ontologySignature.size(); i++){
+				for(int j = 0; j < ontologySignature.size(); j++){
+					OWLClass element = ontologySignature.get(j);
 					Set<OWLClass> sign = new HashSet<>();
 					sign.add(element);
-					for(int loop = 0; loop < iteration; loop++){
-						(new RBMExtractor()).extractModule(ruleSet, sign);
-					}
+					(new RBMExtractor()).extractModule(ruleSet, sign);
 				}
-				endTime = System.currentTimeMillis();
-
-				rbme_results[index][(iteration - min_iter) / step_iter] = endTime - startTime;
 			}
-			endProgress();
+			endTime = System.currentTimeMillis();
+			rbme_results[index] = endTime - startTime;
 		}
 		
 		System.out.println("[INFO] building data file");
 		
 		StringBuilder result = new StringBuilder();
 		//create ontologie data table
-		result.append("iri;axiomCount;loadTime;ruleGenTime;owlapi_instTime;passedCorrectnessOWLAPI;passedCorrectnessRBME;passedSize;file\n");
+		result.append("iri;axiomCount;loadTime;ruleGenTime;owlapi_instTime;passedCorrectnessOWLAPI;passedCorrectnessRBME;passedSize;owlapi_time;rbme_time;iterations;file\n");
 		for(int index = 0; index < max_onto; index++){
 			result.append(ontoData[index].iri).append(";").append(ontoData[index].axiomCount).append(";");
 			result.append(ontoData[index].loadTime).append(";").append(ontoData[index].ruleGenTime).append(";");
@@ -201,24 +186,12 @@ public class Main {
 			result.append(ontoData[index].passedCorrectnessOWLAPI).append(";");
 			result.append(ontoData[index].passedCorrectnessRBME).append(";");
 			result.append(ontoData[index].passedSize).append(";");
+			result.append(owlapi_results[index]).append(";");
+			result.append(rbme_results[index]).append(";");
+			result.append(iters[index]).append(";");
 			result.append(ontoData[index].file).append("\n");
 		}
 		result.append("\n");
-		//create measurements table
-		result.append("iteration;");
-		for(int index = 0; index < max_onto; index++){
-			result.append("owlapi time (").append(index).append(");");
-			result.append("rbme time (").append(index).append(");");
-		}
-		result.append("\n");
-		for(int i = 0; i < values; i++){
-			result.append(min_iter + i * step_iter).append(";");
-			for(int index = 0; index < max_onto; index++){
-				result.append(owlapi_results[index][i]).append(";").append(rbme_results[index][i]).append(";");
-			}
-			result.append("\n");
-		}
-		
 		
 		BufferedWriter bw = null;
 		while(true){

@@ -42,28 +42,51 @@ public class CorrectnessTest {
 		extractor = new SyntacticLocalityModuleExtractor(m, ontology, ModuleType.BOT);
 	}
 	
-	@Test public void CorrectnessTestRBME(){
+	@Test public void SemanticCorrectnessTestRBME(){
 		SignatureGenerator.testSet(new SignatureTest() {
 			@Override
 			public void method(Set<OWLClass> testSet, OWLOntology ontology) {
 				Set<OWLAxiom> module = (new RBMExtractor()).extractModule(ruleSet, testSet);
-				assertTrue("RBME result is not a semantical local module", mCheck.isSemanticalLocalModule(ontology, module) == null);
-				assertTrue("RBME result is not a syntactical local module", mCheck.isSyntacticalLocalModule(ontology, module) == null);
+				OWLAxiom a1 = mCheck.isSemanticalLocalModule(ontology, module);
+				assertTrue("RBME result is not a semantical local module due to axiom " + a1, a1 == null);
 				
 			}
 		}, new HashSet<>(), ontologySignature, -1, ontology, TestSuite.max_cases);
 	}
 	
-	@Test public void CorrectnessTestOWLApi(){
+	@Test public void SyntacticCorrectnessTestRBME(){
 		SignatureGenerator.testSet(new SignatureTest() {
 			@Override
 			public void method(Set<OWLClass> testSet, OWLOntology ontology) {
-				Set<OWLAxiom> module = extractor.extract(Collections.unmodifiableSet(testSet));
-				assertTrue("OWLApi result is not a semantical local module", mCheck.isSemanticalLocalModule(ontology, module) == null);
-				assertTrue("OWLApi result is not a syntactical local module", mCheck.isSyntacticalLocalModule(ontology, module) == null);
+				Set<OWLAxiom> module = (new RBMExtractor()).extractModule(ruleSet, testSet);
+				OWLAxiom a1 = mCheck.isSyntacticalLocalModule(ontology, module);
+				assertTrue("RBME result is not a syntactical local module due to axiom " + a1, a1 == null);
 				
 			}
 		}, new HashSet<>(), ontologySignature, -1, ontology, TestSuite.max_cases);
 	}
-
+	
+	@Test public void SemanticCorrectnessTestOWLAPI(){
+		SignatureGenerator.testSet(new SignatureTest() {
+			@Override
+			public void method(Set<OWLClass> testSet, OWLOntology ontology) {
+				Set<OWLAxiom> module = extractor.extract(Collections.unmodifiableSet(testSet));
+				OWLAxiom a1 = mCheck.isSemanticalLocalModule(ontology, module);
+				assertTrue("OWLAPI result is not a semantical local module due to axiom " + a1, a1 == null);
+				
+			}
+		}, new HashSet<>(), ontologySignature, -1, ontology, TestSuite.max_cases);
+	}
+	
+	@Test public void SyntacticCorrectnessTestOWLAPI(){
+		SignatureGenerator.testSet(new SignatureTest() {
+			@Override
+			public void method(Set<OWLClass> testSet, OWLOntology ontology) {
+				Set<OWLAxiom> module = extractor.extract(Collections.unmodifiableSet(testSet));
+				OWLAxiom a1 = mCheck.isSyntacticalLocalModule(ontology, module);
+				assertTrue("OWLAPI result is not a syntactical local module due to axiom " + a1, a1 == null);
+				
+			}
+		}, new HashSet<>(), ontologySignature, -1, ontology, TestSuite.max_cases);
+	}
 }

@@ -13,7 +13,6 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-
 import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
 import de.spellmaker.rbme.rule.RuleSet;
@@ -52,8 +51,26 @@ public class SizeTest {
 				//stop the compiler from optimizing away the module generation
 				assertTrue(moduleRBME.size() >= 0);
 				assertTrue(moduleOWLApi.size() >= 0);
+				
+				assertTrue(moduleRBME.size() <= moduleOWLApi.size());
 				//debug code, allows to display the additional axioms
-				/*if(moduleRBME.size() > moduleOWLApi.size()){
+				
+				/*Set<OWLAxiom> tmp1 = new HashSet<>(moduleRBME);
+				Set<OWLAxiom> tmp2 = new HashSet<>(moduleOWLApi);
+				
+				moduleRBME.forEach(x -> tmp2.remove(x));
+				moduleOWLApi.forEach(x -> tmp1.remove(x));				
+				
+				if(tmp1.size() > 0) tmp1.forEach(x -> System.out.println("additional axiom in rbme: " + x));
+				if(tmp2.size() > 0) tmp2.forEach(x -> System.out.println("additional axiom in owlapi: " + x));
+				
+				if(tmp1.size() > 0 || tmp2.size() > 0){
+					System.out.println(testSet);
+					
+					fail();
+				}
+				
+				if(moduleRBME.size() > moduleOWLApi.size()){
 					bigger ++;
 		
 					moduleOWLApi.forEach(x -> moduleRBME.remove(x));

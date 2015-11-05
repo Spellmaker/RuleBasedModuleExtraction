@@ -20,6 +20,7 @@ import org.semanticweb.owlapi.model.OWLDataExactCardinality;
 import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
 import org.semanticweb.owlapi.model.OWLDataMinCardinality;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
@@ -50,14 +51,18 @@ import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
 import org.semanticweb.owlapi.model.OWLObjectHasSelf;
 import org.semanticweb.owlapi.model.OWLObjectHasValue;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectInverseOf;
 import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor;
 import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLSameIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLSubAnnotationPropertyOfAxiom;
@@ -77,7 +82,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDeclarationAxiomImpl;
  * @author spellmaker
  *
  */
-public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpressionVisitor{
+public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpressionVisitor, OWLPropertyExpressionVisitor{
 	private RuleSet ruleSet;
 	private List<OWLObject> unknownObjects;
 	
@@ -233,7 +238,7 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public void visit(OWLDeclarationAxiom axiom) {
 		// TODO Auto-generated method stub
-		//Ignore OWLDeclarationAxioms, they are added through other rules
+		ruleSet.add(new Rule(null, axiom, axiom.getEntity()));
 	}
 
 	@Override
@@ -281,8 +286,10 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 
 	@Override
 	public void visit(OWLEquivalentObjectPropertiesAxiom axiom) {
-		// TODO Auto-generated method stub
-		unknownObjects.add(axiom);
+		for(OWLObjectPropertyExpression e : axiom.getProperties()){
+			ruleSet.add(new Rule(null, axiom, e));
+			e.accept(this);
+		}
 	}
 
 	@Override
@@ -328,8 +335,10 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 
 	@Override
 	public void visit(OWLSubObjectPropertyOfAxiom axiom) {
-		// TODO Auto-generated method stub
-		//unknownObjects.add(axiom);
+		OWLObjectPropertyExpression expr = axiom.getSubProperty();
+		ruleSet.add(new Rule(null, axiom, expr));
+		expr.accept(this);
+		//axiom.getSuperProperty().accept(this);
 	}
 
 	@Override
@@ -383,8 +392,7 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 
 	@Override
 	public void visit(OWLTransitiveObjectPropertyAxiom axiom) {
-		// TODO Auto-generated method stub
-		unknownObjects.add(axiom);
+		ruleSet.add(new Rule(null, axiom, axiom.getProperty()));
 	}
 
 	@Override
@@ -444,5 +452,22 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 	@Override
 	public Collection<OWLObject> unknownObjects() {
 		return unknownObjects;
+	}
+
+	@Override
+	public void visit(OWLObjectProperty property) {
+		if(!property.isTopEntity()) ruleSet.add(new Rule(null, new OWLDeclarationAxiomImpl(property, Collections.emptyList()), property));
+	}
+
+	@Override
+	public void visit(OWLObjectInverseOf property) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(OWLDataProperty property) {
+		// TODO Auto-generated method stub
+		
 	}
 }
