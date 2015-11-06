@@ -3,6 +3,8 @@ package de.spellmaker.rbme.util;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.semanticweb.HermiT.Configuration;
+import org.semanticweb.HermiT.Configuration.ExistentialStrategyType;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyDomainAxiom;
@@ -48,12 +50,16 @@ import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.SWRLRule;
+import org.semanticweb.owlapi.reasoner.IllegalConfigurationException;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 import com.clarkparsia.owlapi.modularity.locality.LocalityClass;
 import com.clarkparsia.owlapi.modularity.locality.LocalityEvaluator;
 import com.clarkparsia.owlapi.modularity.locality.SemanticLocalityEvaluator;
 import com.clarkparsia.owlapi.modularity.locality.SyntacticLocalityEvaluator;
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 /**
  * Checks for the correctness of a module
@@ -61,7 +67,7 @@ import com.clarkparsia.owlapi.modularity.locality.SyntacticLocalityEvaluator;
  *
  */
 public class ModuleCheck implements OWLAxiomVisitor{
-	private OWLReasonerFactory factory = new Reasoner.ReasonerFactory();
+	private OWLReasonerFactory factory = new PelletReasonerFactory();//new Reasoner.ReasonerFactory();
 	private SemanticLocalityEvaluator locality;
 	private SyntacticLocalityEvaluator locality2 = new SyntacticLocalityEvaluator(LocalityClass.BOTTOM_BOTTOM);
 	private OWLAxiom error;
@@ -70,7 +76,37 @@ public class ModuleCheck implements OWLAxiomVisitor{
 	private Set<OWLEntity> signature = null;
 	
 	public ModuleCheck(OWLOntologyManager manager){
-		locality = new SemanticLocalityEvaluator(manager, factory);
+		//Configuration config = new Configuration();
+		//config.existentialStrategyType = ExistentialStrategyType.INDIVIDUAL_REUSE;
+		locality = new SemanticLocalityEvaluator(manager, factory); /*new OWLReasonerFactory() {
+			
+			@Override
+			public String getReasonerName() {
+				return factory.getReasonerName();
+			}
+			
+			@Override
+			public OWLReasoner createReasoner(OWLOntology ontology, OWLReasonerConfiguration config)
+					throws IllegalConfigurationException {
+				return factory.createReasoner(ontology, config);
+			}
+			
+			@Override
+			public OWLReasoner createReasoner(OWLOntology ontology) {
+				return factory.createReasoner(ontology, config);
+			}
+			
+			@Override
+			public OWLReasoner createNonBufferingReasoner(OWLOntology ontology, OWLReasonerConfiguration config)
+					throws IllegalConfigurationException {
+				return factory.createNonBufferingReasoner(ontology, config);
+			}
+			
+			@Override
+			public OWLReasoner createNonBufferingReasoner(OWLOntology ontology) {
+				return factory.createNonBufferingReasoner(ontology, config);
+			}
+		});*/
 	}	
 	
 	/**

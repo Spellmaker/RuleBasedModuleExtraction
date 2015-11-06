@@ -27,15 +27,17 @@ import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 public class WorkerThread implements Callable<Map<String, String>> {
 	//configuration data
 	private int iterations;
+	private int rule_iterations;
 	private File ontologyFile;
 	private boolean doChecks;
 	//result data
 	private Map<String, String> ontoData;
 	
-	public WorkerThread(int iterations, File ontologyFile, boolean doChecks){
+	public WorkerThread(int rule_iterations, int iterations, File ontologyFile, boolean doChecks){
 		this.iterations = iterations;
 		this.ontologyFile = ontologyFile;
 		this.doChecks = doChecks;
+		this.rule_iterations = (rule_iterations >= 1) ? rule_iterations : 1;
 	}
 	
 	private void printInfo(String msg){
@@ -71,13 +73,20 @@ public class WorkerThread implements Callable<Map<String, String>> {
 		ontology.getSignature().stream().filter(x -> x instanceof OWLClass).forEach(x -> ontologySignature.add((OWLClass)x));
 		
 		startTime = System.currentTimeMillis();
-		RuleSet ruleSet = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
+		RuleSet ruleSet = null;
+		for(int i = 0; i < rule_iterations; i++){
+			ruleSet = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
+		}
 		endTime = System.currentTimeMillis();
 		
+		ontoData.put("rule_iterations", "" + rule_iterations);
 		ontoData.put("ruleGenTime" , "" + (endTime - startTime));
 		
 		startTime = System.currentTimeMillis();
-		SyntacticLocalityModuleExtractor extractor = new SyntacticLocalityModuleExtractor(m, ontology, ModuleType.BOT);
+		SyntacticLocalityModuleExtractor extractor = null;
+		for(int i = 0; i < rule_iterations; i++){
+			extractor = new SyntacticLocalityModuleExtractor(m, ontology, ModuleType.BOT);
+		}
 		endTime = System.currentTimeMillis();
 		
 		ontoData.put("owlapi_instTime", "" + (endTime - startTime));

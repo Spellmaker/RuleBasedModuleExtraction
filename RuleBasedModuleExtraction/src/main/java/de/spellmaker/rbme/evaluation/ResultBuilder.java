@@ -6,13 +6,15 @@ import java.util.Map;
 import de.spellmaker.rbme.ore.OREManager;
 
 public class ResultBuilder {	
-	public static StringBuilder buildResult(List<Map<String, String>> data, OREManager manager, String...labels){
+	public static StringBuilder buildResult(List<Map<String, String>> data, OREManager manager, boolean buildHeader, String...labels){
 		StringBuilder result = new StringBuilder();
-		result.append(labels[0]);
-		for(int i = 1; i < labels.length; i++){
-			result.append(";").append(labels[i]);
+		if(buildHeader){
+			result.append(labels[0]);
+			for(int i = 1; i < labels.length; i++){
+				result.append(";").append(labels[i]);
+			}
+			result.append("\n");
 		}
-		result.append("\n");
 		for(Map<String, String> line : data){
 			String fname = line.get("file");
 			

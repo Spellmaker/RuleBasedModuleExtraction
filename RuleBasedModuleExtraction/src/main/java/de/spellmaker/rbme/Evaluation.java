@@ -24,30 +24,42 @@ public class Evaluation {
 		
 		List<File> ontologies = new ArrayList<>();
 		System.out.println("[INFO] Adding ore el ontologies");
-		ontologies.addAll(manager.filterOntologies(x -> Integer.parseInt(x[0]) < 150, "logical_axiom_count"));
+		ontologies.addAll(manager.filterOntologies(x -> Integer.parseInt(x[0]) < 1000, "logical_axiom_count"));
 		System.out.println("[INFO] Collected " + ontologies.size() + " ontologies");
 	
-		int iteration_count = 1000;
-		int max_onto = 10; 
+		int rule_gens = 100;
+		int iteration_count = 0;
+		int max_onto = ontologies.size(); 
 		
-		List<Map<String, String>> data = new LinkedList<>();
-		for(Future<Map<String, String>> f : runTest(ontologies, max_onto, iteration_count)){
-			data.add(f.get());
-		}
-		
-		StringBuilder result = ResultBuilder.buildResult(data, manager, 
-				"file", "logical_axiom_count", "abox_size", "rbme_result", "owlapi_result");
+		StringBuilder result = ResultBuilder.buildResult(getData(ontologies, max_onto, 1000, iteration_count), manager, true,
+				"file", "logical_axiom_count", "abox_size", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rule_iterations", "iterations");
+		ontologies.clear();
+		ontologies.addAll(manager.filterOntologies(x -> Integer.parseInt(x[0]) > 1000 && Integer.parseInt(x[0]) < 10000, "logical_axiom_count"));
+		result.append(ResultBuilder.buildResult(getData(ontologies, max_onto, 100, iteration_count), manager, false,
+				"file", "logical_axiom_count", "abox_size", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rule_iterations", "iterations").toString());
+		ontologies.clear();
+		ontologies.addAll(manager.filterOntologies(x -> Integer.parseInt(x[0]) > 10000, "logical_axiom_count"));
+		result.append(ResultBuilder.buildResult(getData(ontologies, max_onto, 10, iteration_count), manager, false,
+				"file", "logical_axiom_count", "abox_size", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rule_iterations", "iterations").toString());
 		
 		handleOutput(result);
 		System.out.println("[INFO] evaluation finished");
 	}
+	
+	private static List<Map<String, String>> getData(List<File> ontologies, int max_onto, int rule_gens, int iteration_count) throws Exception{
+		List<Map<String, String>> data = new LinkedList<>();
+		for(Future<Map<String, String>> f : runTest(ontologies, max_onto, rule_gens, iteration_count)){
+			data.add(f.get());
+		}
+		return data;
+	}
 
-	private static List<Future<Map<String, String>>> runTest(List<File> ontologies, int max_onto, int iteration_count){
+	private static List<Future<Map<String, String>>> runTest(List<File> ontologies, int max_onto, int rule_gens, int iteration_count){
 		System.out.println("method run");
 		ExecutorService pool = Executors.newFixedThreadPool(4);
 		List<Future<Map<String, String>>> futures = new ArrayList<>(max_onto);
 		for(int i = 0; i < max_onto && i < ontologies.size(); i++){
-			WorkerThread current = new WorkerThread(iteration_count, ontologies.get(i), false);
+			WorkerThread current = new WorkerThread(rule_gens, iteration_count, ontologies.get(i), false);
 			futures.add(pool.submit(current));
 		}
 	
