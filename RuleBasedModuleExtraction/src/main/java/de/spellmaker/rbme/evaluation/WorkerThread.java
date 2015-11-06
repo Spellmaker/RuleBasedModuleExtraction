@@ -3,8 +3,10 @@ package de.spellmaker.rbme.evaluation;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -22,22 +24,18 @@ import de.spellmaker.rbme.util.ModuleCheck;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 
-public class WorkerThread implements Callable<OntologieData> {
+public class WorkerThread implements Callable<Map<String, String>> {
 	//configuration data
 	private int iterations;
 	private File ontologyFile;
 	private boolean doChecks;
-	private int maxsize;
-	private int minsize;
 	//result data
-	private OntologieData ontoData;
+	private Map<String, String> ontoData;
 	
-	public WorkerThread(int iterations, File ontologyFile, boolean doChecks, int minsize, int maxsize){
+	public WorkerThread(int iterations, File ontologyFile, boolean doChecks){
 		this.iterations = iterations;
 		this.ontologyFile = ontologyFile;
 		this.doChecks = doChecks;
-		this.maxsize = maxsize;
-		this.minsize = minsize;
 	}
 	
 	private void printInfo(String msg){
@@ -45,7 +43,7 @@ public class WorkerThread implements Callable<OntologieData> {
 	}
 
 	@Override
-	public OntologieData call() throws Exception {
+	public Map<String, String> call() throws Exception {
 		printInfo("started");
 		
 		long startTime = 0;
@@ -54,25 +52,20 @@ public class WorkerThread implements Callable<OntologieData> {
 		OWLOntologyManager m = OWLManager.createOWLOntologyManager();
 		ModuleCheck mCheck = null;
 		if(doChecks) mCheck = new ModuleCheck(m);
-		ontoData = new OntologieData();
+		ontoData = new HashMap<>();
 		printInfo("loading ontology");
 		startTime = System.currentTimeMillis();
 		OWLOntology ontology = m.loadOntologyFromOntologyDocument(ontologyFile);
 		endTime = System.currentTimeMillis();
 		printInfo("ontology size is " + ontology.getAxiomCount());
 		
-		if((ontology.getAxiomCount() > maxsize && maxsize > 0) || ontology.getAxiomCount() < minsize){
-			printInfo("skipping due to size restrictions");
-			return null;
-		}
-		ontoData.iri = ontology.getOntologyID().toString();
-		ontoData.file = ontologyFile.toString();
-		ontoData.loadTime = endTime - startTime;
-		ontoData.axiomCount = ontology.getAxiomCount();
-		
-		ontoData.passedCorrectnessOWLAPI = true;
-		ontoData.passedCorrectnessRBME = true;
-		ontoData.passedSize = true;
+		ontoData.put("IRI", ontology.getOntologyID().toString());
+		ontoData.put("file", ontologyFile.getName().toString());
+		ontoData.put("loadTime", "" + (endTime - startTime));
+		ontoData.put("axiomCount", "" + ontology.getAxiomCount());
+		boolean corrOWLAPI = true;
+		boolean corrRBME = true;
+		boolean passSize = true;
 		
 		List<OWLClass> ontologySignature = new ArrayList<>();
 		ontology.getSignature().stream().filter(x -> x instanceof OWLClass).forEach(x -> ontologySignature.add((OWLClass)x));
@@ -81,13 +74,13 @@ public class WorkerThread implements Callable<OntologieData> {
 		RuleSet ruleSet = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
 		endTime = System.currentTimeMillis();
 		
-		ontoData.ruleGenTime = endTime - startTime;
+		ontoData.put("ruleGenTime" , "" + (endTime - startTime));
 		
 		startTime = System.currentTimeMillis();
 		SyntacticLocalityModuleExtractor extractor = new SyntacticLocalityModuleExtractor(m, ontology, ModuleType.BOT);
 		endTime = System.currentTimeMillis();
 		
-		ontoData.owlapi_instTime = endTime - startTime;
+		ontoData.put("owlapi_instTime", "" + (endTime - startTime));
 		if(doChecks){
 			printInfo("performing correctness and size tests");
 			for(int i = 0; i < ontologySignature.size(); i++){
@@ -99,33 +92,37 @@ public class WorkerThread implements Callable<OntologieData> {
 				
 				//check general correctness
 				if(mCheck.isSemanticalLocalModule(ontology, moduleOWLAPI) != null){
-					ontoData.passedCorrectnessOWLAPI = false;
+					corrOWLAPI = false;
 				}
 				if(mCheck.isSyntacticalLocalModule(ontology, moduleOWLAPI) != null){
-					ontoData.passedCorrectnessOWLAPI = false;
+					corrOWLAPI = false;
 				}
 				if(mCheck.isSemanticalLocalModule(ontology, moduleRBME) != null){
-					ontoData.passedCorrectnessRBME = false;
+					corrRBME = false;
 				}
 				if(mCheck.isSyntacticalLocalModule(ontology, moduleRBME) != null){
-					ontoData.passedCorrectnessRBME = false;
+					corrRBME = false;
 				}
 				
 				//check size
 				if(moduleOWLAPI.size() < moduleRBME.size()){
-					ontoData.passedSize = false;
+					passSize = false;
 				}
 			}
 		}
 		else{
 			printInfo("skipping tests");
 		}
+		
+		ontoData.put("passedCorrectnessOWLAPI", "" + corrOWLAPI);
+		ontoData.put("passedCorrectnessRBME", "" + corrRBME);
+		ontoData.put("passedSize",  "" + passSize);
 
-		ontoData.iterations = iterations;
-		printInfo("perfoming " + ontoData.iterations + " iterations");
+		ontoData.put("iterations", "" + iterations);
+		printInfo("perfoming " + iterations + " iterations");
 		printInfo("processing owlapi");
 		startTime = System.currentTimeMillis();
-		for(int i = 0; i < ontoData.iterations; i++){
+		for(int i = 0; i < iterations; i++){
 			for(int j = 0; j < ontologySignature.size(); j++){
 				OWLClass element = ontologySignature.get(j);
 				Set<OWLEntity> sign = new HashSet<>();
@@ -134,11 +131,11 @@ public class WorkerThread implements Callable<OntologieData> {
 			}
 		}
 		endTime = System.currentTimeMillis();
-		ontoData.owlapi_result = endTime - startTime;
+		ontoData.put("owlapi_result", "" + (endTime - startTime));
 		
 		printInfo("processing rbme");
 		startTime = System.currentTimeMillis();
-		for(int i = 0; i < ontoData.iterations; i++){
+		for(int i = 0; i < iterations; i++){
 			for(int j = 0; j < ontologySignature.size(); j++){
 				OWLClass element = ontologySignature.get(j);
 				Set<OWLClass> sign = new HashSet<>();
@@ -147,7 +144,7 @@ public class WorkerThread implements Callable<OntologieData> {
 			}
 		}
 		endTime = System.currentTimeMillis();
-		ontoData.rbme_result = endTime - startTime;
+		ontoData.put("rbme_result", "" + (endTime - startTime));
 		
 		printInfo("terminated");
 		
