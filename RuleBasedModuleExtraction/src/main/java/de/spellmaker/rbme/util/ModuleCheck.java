@@ -59,7 +59,6 @@ import com.clarkparsia.owlapi.modularity.locality.LocalityClass;
 import com.clarkparsia.owlapi.modularity.locality.LocalityEvaluator;
 import com.clarkparsia.owlapi.modularity.locality.SemanticLocalityEvaluator;
 import com.clarkparsia.owlapi.modularity.locality.SyntacticLocalityEvaluator;
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 /**
  * Checks for the correctness of a module
@@ -67,7 +66,7 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
  *
  */
 public class ModuleCheck implements OWLAxiomVisitor{
-	private OWLReasonerFactory factory = new PelletReasonerFactory();//new Reasoner.ReasonerFactory();
+	private OWLReasonerFactory factory = new Reasoner.ReasonerFactory();
 	private SemanticLocalityEvaluator locality;
 	private SyntacticLocalityEvaluator locality2 = new SyntacticLocalityEvaluator(LocalityClass.BOTTOM_BOTTOM);
 	private OWLAxiom error;
