@@ -28,29 +28,31 @@ public class Evaluation {
 		System.out.println("[INFO] Collected " + ontologies.size() + " ontologies");
 	
 		int rule_gens = 100;
-		int iteration_count = 0;
+		int iteration_count = 1000;
 		int max_onto = ontologies.size(); 
 		
-		StringBuilder result = ResultBuilder.buildResult(getData(ontologies, max_onto, 1000, iteration_count), manager, true,
-				"file", "logical_axiom_count", "abox_size", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rule_iterations", "iterations");
-		handleOutput(result, "out1.csv");
+		StringBuilder result = ResultBuilder.buildResult(getData(ontologies, max_onto, 1, iteration_count), manager, true,
+				"file", "logical_axiom_count", "abox_size", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rbme_result", "rule_iterations", "iterations");
+		handleOutput(result, "out1_2.csv");
 		System.out.println("[INFO] Completed step 1");
 		
 		ontologies.clear();
 		ontologies.addAll(manager.filterOntologies(x -> Integer.parseInt(x[0]) > 1000 && Integer.parseInt(x[0]) < 10000, "logical_axiom_count"));
 		max_onto = ontologies.size(); 
-		result = ResultBuilder.buildResult(getData(ontologies, max_onto, 100, iteration_count), manager, false,
-				"file", "logical_axiom_count", "abox_size", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rule_iterations", "iterations");
-		handleOutput(result, "out2.csv");
+		iteration_count = 100;
+		result = ResultBuilder.buildResult(getData(ontologies, max_onto, 1, iteration_count), manager, false,
+				"file", "logical_axiom_count", "abox_size", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rbme_result", "rule_iterations", "iterations");
+		handleOutput(result, "out2_2.csv");
 		System.out.println("[INFO] Completed step 2");
 		
 		ontologies.clear();
 		ontologies.addAll(manager.filterOntologies(x -> Integer.parseInt(x[0]) > 10000, "logical_axiom_count"));
 		max_onto = ontologies.size(); 
-		result = ResultBuilder.buildResult(getData(ontologies, max_onto, 10, iteration_count), manager, false,
-				"file", "logical_axiom_count", "abox_size", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rule_iterations", "iterations");
+		iteration_count = 10;
+		result = ResultBuilder.buildResult(getData(ontologies, max_onto, 1, iteration_count), manager, false,
+				"file", "logical_axiom_count", "abox_size", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rbme_result", "rule_iterations", "iterations");
 		
-		handleOutput(result, "out3.csv");
+		handleOutput(result, "out3_2.csv");
 		System.out.println("[INFO] evaluation finished");
 	}
 	
@@ -63,14 +65,13 @@ public class Evaluation {
 	}
 
 	private static List<Future<Map<String, String>>> runTest(List<File> ontologies, int max_onto, int rule_gens, int iteration_count){
-		System.out.println("method run");
 		ExecutorService pool = Executors.newFixedThreadPool(8);
 		List<Future<Map<String, String>>> futures = new ArrayList<>(max_onto);
 		for(int i = 0; i < max_onto && i < ontologies.size(); i++){
 			WorkerThread current = new WorkerThread(rule_gens, iteration_count, ontologies.get(i), false);
 			futures.add(pool.submit(current));
-		}
-	
+		}		
+		
 		List<Future<Map<String, String>>> finished = new ArrayList<>(max_onto);
 		boolean hasUnfinished = true;
 		while(hasUnfinished){
