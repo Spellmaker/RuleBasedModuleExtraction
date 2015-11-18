@@ -15,6 +15,7 @@ public class Rule implements Iterable<Integer>{
 	private final Integer[] body;
 	private final Integer head;
 	private final Integer axiom;
+	private int size;
 	
 	public Rule(Integer head, Integer axiom, Integer ...body){
 		this.axiom = axiom;
@@ -26,6 +27,7 @@ public class Rule implements Iterable<Integer>{
 		else{
 			this.body = null;
 		}
+		this.size = (this.body == null) ? 0 : this.body.length;
 	}
 	
 	public Integer getAxiom(){
@@ -65,7 +67,7 @@ public class Rule implements Iterable<Integer>{
 	}
 	
 	public int size(){
-		return (body == null) ? 0 : body.length;
+		return size;
 	}
 	
 	@Override
