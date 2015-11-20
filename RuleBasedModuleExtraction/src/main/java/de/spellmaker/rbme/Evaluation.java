@@ -26,8 +26,17 @@ public class Evaluation {
 		System.out.println("[INFO] Adding ore el ontologies");
 		ontologies.addAll(manager.filterOntologies(x -> Integer.parseInt(x[0]) < 1000, "logical_axiom_count"));
 		System.out.println("[INFO] Collected " + ontologies.size() + " ontologies");
+		int filter = 500;
+		System.out.println("[INFO] restricting to the last " + filter + " ontologies");
+		while(ontologies.size() > filter){
+			ontologies.remove(0);
+		}
+		StringBuilder result = ResultBuilder.buildResult(getData(ontologies, ontologies.size(), 100, 100), manager, true, "logical_axiom_count", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rbme_result", "rule_iterations", "iterations");
+		handleOutput(result, "rule_generation_integer.csv");
+		System.out.println("[INFO] Evaluation finished");
+		
 	
-		int rule_gens = 100;
+		/*int rule_gens = 100;
 		int iteration_count = 1000;
 		int max_onto = ontologies.size(); 
 		
@@ -53,7 +62,7 @@ public class Evaluation {
 				"file", "logical_axiom_count", "abox_size", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rbme_result", "rule_iterations", "iterations");
 		
 		handleOutput(result, "out3_2.csv");
-		System.out.println("[INFO] evaluation finished");
+		System.out.println("[INFO] evaluation finished");*/
 	}
 	
 	private static List<Map<String, String>> getData(List<File> ontologies, int max_onto, int rule_gens, int iteration_count) throws Exception{
