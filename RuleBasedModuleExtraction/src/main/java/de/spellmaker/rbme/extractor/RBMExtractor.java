@@ -23,7 +23,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDeclarationAxiomImpl;
  *
  */
 public class RBMExtractor {
-	private Set<Integer> module;
+	private Set<OWLAxiom> module;
 	private boolean[] knownNotBottom;//Set<Integer> knownNotBottom;
 	private Queue<Integer> queue;
 	private Integer owlThing;
@@ -89,7 +89,7 @@ public class RBMExtractor {
 						//in case the head is an axiom, add all new vocabulary from the axiom
 						//into the processing queue
 						rules.getAxiomSignature(ruleAxioms[cRule]).forEach(x -> addQueue(x));
-						module.add(ruleAxioms[cRule]);
+						module.add((OWLAxiom) rules.lookup(ruleAxioms[cRule]));
 					}
 					else{
 						/*if(head instanceof OWLAxiom){
@@ -102,9 +102,7 @@ public class RBMExtractor {
 			}
 		}
 		
-		Set<OWLAxiom> realModule = new HashSet<>();
-		module.forEach(x -> realModule.add((OWLAxiom) rules.lookup(x)));
-		return realModule;
+		return module;
 	}
 	
 	private boolean addQueue(Integer o){

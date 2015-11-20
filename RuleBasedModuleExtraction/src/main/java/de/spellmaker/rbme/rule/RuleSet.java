@@ -22,7 +22,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 	private Set<Integer> baseSignature;
-	private Set<Integer> baseModule;
+	private Set<OWLAxiom> baseModule;
 	private Map<Integer, List<Integer>> ruleMap;	
 	
 	private Map<Integer, List<Integer>> axiomSignatures;
@@ -125,19 +125,21 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 		//baseSignature.addAll(ax.getClassExpression().getSignature());
 		//baseModule.add(ax);
 		ax.getClassExpression().getSignature().forEach(x -> baseSignature.add(putObject(x)));
-		baseModule.add(putObject(ax));
+		putObject(ax);
+		baseModule.add(ax);
 	}
 	
 	@Override
 	public void visit(OWLObjectPropertyAssertionAxiom ax){
 		OWLObjectPropertyExpression prop = ax.getProperty();
 		prop.getSignature().forEach(x -> baseSignature.add(putObject(x)));
-		baseModule.add(putObject(ax));
+		putObject(ax);
+		baseModule.add(ax);
 		//baseSignature.addAll(prop.getSignature());
 		//baseModule.add(ax);
 	}
 	
-	public Set<Integer> getBaseModule(){
+	public Set<OWLAxiom> getBaseModule(){
 		return baseModule;
 	}
 	

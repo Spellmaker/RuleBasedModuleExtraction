@@ -19,6 +19,12 @@ import de.spellmaker.rbme.ore.OREManager;
 public class Evaluation {	
 	
 	public static void main(String[] args) throws Exception{
+		/*
+		 * args[0] = ore_path
+		 * args[1] = ontologie filter
+		 * args[2] = rule generation count
+		 * args[3] = iteration count
+		 */
 		OREManager manager = new OREManager();
 		manager.load(Paths.get(args[0]), "el/consistency", "el/classification", "el/instantiation");//, "dl\\classification", "dl\\instantiation", "dl\\consistency");		
 		
@@ -26,12 +32,7 @@ public class Evaluation {
 		System.out.println("[INFO] Adding ore el ontologies");
 		ontologies.addAll(manager.filterOntologies(x -> Integer.parseInt(x[0]) < 1000, "logical_axiom_count"));
 		System.out.println("[INFO] Collected " + ontologies.size() + " ontologies");
-		int filter = 500;
-		System.out.println("[INFO] restricting to the last " + filter + " ontologies");
-		while(ontologies.size() > filter){
-			ontologies.remove(0);
-		}
-		StringBuilder result = ResultBuilder.buildResult(getData(ontologies, ontologies.size(), 100, 100), manager, true, "logical_axiom_count", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rbme_result", "rule_iterations", "iterations");
+		StringBuilder result = ResultBuilder.buildResult(getData(ontologies, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])), manager, true, "logical_axiom_count", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rbme_result", "rule_iterations", "iterations");
 		handleOutput(result, "rule_generation_integer.csv");
 		System.out.println("[INFO] Evaluation finished");
 		
