@@ -24,6 +24,7 @@ public class Evaluation {
 		 * args[1] = ontologie filter
 		 * args[2] = rule generation count
 		 * args[3] = iteration count
+		 * args[4] = file name
 		 */
 		OREManager manager = new OREManager();
 		manager.load(Paths.get(args[0]), "el/consistency", "el/classification", "el/instantiation");//, "dl\\classification", "dl\\instantiation", "dl\\consistency");		
@@ -33,7 +34,7 @@ public class Evaluation {
 		ontologies.addAll(manager.filterOntologies(x -> Integer.parseInt(x[0]) < 1000, "logical_axiom_count"));
 		System.out.println("[INFO] Collected " + ontologies.size() + " ontologies");
 		StringBuilder result = ResultBuilder.buildResult(getData(ontologies, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])), manager, true, "logical_axiom_count", "ruleGenTime", "owlapi_instTime", "owlapi_result", "rbme_result", "rule_iterations", "iterations");
-		handleOutput(result, "rule_generation_integer.csv");
+		handleOutput(result, args[4]);
 		System.out.println("[INFO] Evaluation finished");
 		
 	
