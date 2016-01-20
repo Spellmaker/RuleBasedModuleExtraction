@@ -1,10 +1,6 @@
 package de.spellmaker.rbme.rule;
 
 import java.util.Iterator;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLObject;
-
-import de.spellmaker.rbme.util.ClassPrinter;
 
 /**
  * Represents a module extraction rule
@@ -15,10 +11,12 @@ public class Rule implements Iterable<Integer>{
 	private final Integer[] body;
 	private final Integer head;
 	private final Integer axiom;
+	private final Integer define;
 	private int size;
 	
-	public Rule(Integer head, Integer axiom, Integer ...body){
+	public Rule(Integer head, Integer axiom, Integer define, Integer ...body){
 		this.axiom = axiom;
+		this.define = define;
 		this.head = head;
 		if(body != null){
 			this.body = new Integer[body.length];
@@ -32,6 +30,10 @@ public class Rule implements Iterable<Integer>{
 	
 	public Integer getAxiom(){
 		return axiom;
+	}
+	
+	public Integer getDefinition(){
+		return define;
 	}
 		
 	/**
@@ -50,8 +52,18 @@ public class Rule implements Iterable<Integer>{
 	public String toString(){
 		String res = "";
 		for(Object e : body){
-			res = res + (res.equals("") ? "" : " & ") + ClassPrinter.printClass(e);
+			res = res + (res.equals("") ? "" : " & ") + e;
 		}
+		
+		res += " -> ";
+		if(head != null) res += head;
+		else{
+			res += axiom;
+			if(define != null){
+				res += " def " + define;
+			}
+		}
+		
 		//if(head instanceof OWLAxiom) 	res += " -> " + ClassPrinter.printAxiom((OWLAxiom) head);
 		//else 							res += " -> " + ClassPrinter.printClass(head);
 		return res;
@@ -62,6 +74,7 @@ public class Rule implements Iterable<Integer>{
 		int res = 0;
 		if(head != null) res += head.hashCode();
 		if(axiom != null) res += axiom.hashCode();
+		if(define != null) res += define.hashCode();
 		for(Object o : body) res += o.hashCode();
 		return res;
 	}

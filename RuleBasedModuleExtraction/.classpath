@@ -87,5 +87,6 @@
 	<classpathentry kind="lib" path="C:/Users/spellmaker/git/pellet/cli/target/pelletcli/lib/xercesImpl-2.11.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/spellmaker/git/pellet/cli/target/pelletcli/lib/xml-apis-1.4.01.jar"/>
 	<classpathentry kind="lib" path="C:/Users/spellmaker/git/pellet/cli/target/pelletcli/lib/xz-1.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/spellmaker/Downloads/cel-0.5.2/cel-0.5.2/cel-plugin/target/de.tudresden.inf.lat.cel-0.5.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

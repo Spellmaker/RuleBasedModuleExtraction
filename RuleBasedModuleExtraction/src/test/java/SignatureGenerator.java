@@ -1,4 +1,5 @@
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -7,7 +8,15 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 public class SignatureGenerator {
 	public static int testSet(SignatureTest tc, Set<OWLClass> currentSet, List<OWLClass> sourceSet, int largestElement, OWLOntology ontology, int max){
-		if(max < 0) return max;
+		for(OWLClass c : sourceSet){
+			Set<OWLClass> sign = new HashSet<>();
+			sign.add(c);
+			
+			tc.method(sign, ontology);
+		}
+		return -1;
+		
+		/*if(max < 0) return max;
 		for(int i = largestElement + 1; i < sourceSet.size(); i++){
 			currentSet.add(sourceSet.get(i));
 			
@@ -17,6 +26,6 @@ public class SignatureGenerator {
 			if(max < 0) break;
 			currentSet.remove(sourceSet.get(i));
 		}
-		return max;
+		return max;*/
 	}
 }

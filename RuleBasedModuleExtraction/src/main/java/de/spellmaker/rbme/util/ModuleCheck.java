@@ -1,10 +1,9 @@
 package de.spellmaker.rbme.util;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.semanticweb.HermiT.Configuration;
-import org.semanticweb.HermiT.Configuration.ExistentialStrategyType;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyDomainAxiom;
@@ -50,15 +49,13 @@ import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.SWRLRule;
-import org.semanticweb.owlapi.reasoner.IllegalConfigurationException;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 import com.clarkparsia.owlapi.modularity.locality.LocalityClass;
 import com.clarkparsia.owlapi.modularity.locality.LocalityEvaluator;
-import com.clarkparsia.owlapi.modularity.locality.SemanticLocalityEvaluator;
 import com.clarkparsia.owlapi.modularity.locality.SyntacticLocalityEvaluator;
+
+import de.spellmaker.rbme.locality.SemanticLocalityEvaluator;
 
 /**
  * Checks for the correctness of a module
@@ -115,7 +112,11 @@ public class ModuleCheck implements OWLAxiomVisitor{
 	 * @return null, if the module is correct or the axiom for which the module is not correct
 	 */
 	public OWLAxiom isSyntacticalLocalModule(OWLOntology ontology, Set<OWLAxiom> module){
-		return check(ontology, module, locality2);
+		return check(ontology, module, locality2, Collections.emptySet());
+	}
+	
+	public OWLAxiom isSyntacticalLocalModule(OWLOntology ontology, Set<OWLAxiom> module, Set<OWLAxiom> skip){
+		return check(ontology, module, locality2, skip);
 	}
 	
 	/**
@@ -125,16 +126,24 @@ public class ModuleCheck implements OWLAxiomVisitor{
 	 * @return null, if the module is correct or the axiom for which the module is not correct
 	 */
 	public OWLAxiom isSemanticalLocalModule(OWLOntology ontology, Set<OWLAxiom> module){
-		return check(ontology, module, locality);
+		return check(ontology, module, locality, Collections.emptySet());
 	}
 	
-	private OWLAxiom check(OWLOntology ontology, Set<OWLAxiom> module, LocalityEvaluator evaluator){
+	public OWLAxiom isSemanticalLocalModule(OWLOntology ontology, Set<OWLAxiom> module, Set<OWLAxiom> skip){
+		return check(ontology, module, locality, skip);
+	}
+	
+	private OWLAxiom check(OWLOntology ontology, Set<OWLAxiom> module, LocalityEvaluator evaluator, Set<OWLAxiom> skip){
 		signature = new HashSet<>();
 		current = evaluator;
 		module.forEach(x -> signature.addAll(x.getSignature()));
+		//System.out.println("checking with signature");
+		//for(OWLEntity e : signature){
+		//	System.out.println(e);
+		//}
 		error = null;
 		for(OWLAxiom axiom : ontology.getAxioms()){
-			if(module.contains(axiom)) continue;
+			if(module.contains(axiom) || skip.contains(axiom)) continue;
 			
 			axiom.accept(this);
 			if(error != null) return error;
@@ -149,12 +158,13 @@ public class ModuleCheck implements OWLAxiomVisitor{
 
 	@Override
 	public void visit(OWLSubObjectPropertyOfAxiom axiom) {
-		//skip
+		if(!current.isLocal(axiom, signature)) error = axiom;
 	}
 
 	@Override
 	public void visit(OWLSubPropertyChainOfAxiom axiom) {
 		//skip
+		if(!current.isLocal(axiom, signature)) error = axiom;
 	}
 
 	@Override
