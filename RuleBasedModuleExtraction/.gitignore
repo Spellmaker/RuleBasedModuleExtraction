@@ -13,4 +13,6 @@ pom-default.xml
 /build/reports/
 /build/test-results/
 /build/tmp/
+/build/libs/
 /ORE/
+/generating/
