@@ -12,9 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import de.spellmaker.rbme.mains.workers.ModuleSizeWorker;
+import de.spellmaker.rbme.mains.workers.RandTimeWorker;
 
-public class TestModuleSizes {
+public class TestRandTimes {
 	public static List<Integer> readGenerating(String file) throws Exception{
 		List<Integer> generating = new LinkedList<>();
 		if(Files.exists(Paths.get(file))){
@@ -31,25 +31,28 @@ public class TestModuleSizes {
 	}
 	
 	public static void main(String[] args) throws Exception{
+		RandTimeWorker.entities = Integer.parseInt(args[0]);
+		RandTimeWorker.iterations = Integer.parseInt(args[1]);
 		//determine ontologies to test
 		//OREManager ore = new OREManager();
 		//ore.load(Paths.get(args[0]), "el/consistency", "el/classification", "el/instantiation");	
 		List<File> files = new LinkedList<>();// = ore.filterOntologies(new ORESizeFilter(0, 100, 500), "logical_axiom_count");
-		//files.add(new File("EL-GALEN.owl"));
-		files.add(new File("snomedStated_INT_20140731.owl"));
+		files.add(new File(args[2]));
+		//files.add(new File(OntologiePaths.medical));
+		//files.add(new File("snomedStated_INT_20140731.owl"));
 		
 		//setup threads
 		ExecutorService mainPool = Executors.newFixedThreadPool(1);
 		ExecutorService extractorPool = Executors.newFixedThreadPool(5);
-		List<Future<Double[]>> futures = new ArrayList<>(files.size());
+		List<Future<Long[]>> futures = new ArrayList<>(files.size());
 		for(int i = 0; i < files.size(); i++){
-			futures.add(mainPool.submit(new ModuleSizeWorker(files.get(i), extractorPool, i)));
+			futures.add(mainPool.submit(new RandTimeWorker(files.get(i), extractorPool, i)));
 		}
 		int finished = 0;
 		boolean terminated = false;
 		while(!terminated){
 			for(int i = 0; i < futures.size(); i++){
-				Future<Double[]> f = futures.get(i);
+				Future<Long[]> f = futures.get(i);
 				if(f.isDone()){
 					finished++;
 					futures.remove(i);
@@ -67,14 +70,27 @@ public class TestModuleSizes {
 		extractorPool.shutdown();
 	}
 	
-	public static void makeOutput(Double[] res){
-		System.out.println("biggest module without optimization: " + res[0]);
-		System.out.println("biggest module with optimization: " + res[1]);
-		double percent = 100 - (res[1] * 100) / res[0];
-		System.out.println("percent reduction: " + percent);
-		System.out.println("avg module size without optimization: " + res[2]);
-		System.out.println("avg module size with optimization: " + res[3]);
-		percent = 100 - (res[3] * 100) / res[2];
-		System.out.println("percent reduction: " + percent);
+	public static void makeOutput(Long[] res){
+		Long largest = 0L;
+		for(Long l : res){
+			if(l > largest) largest = l;
+		}
+		
+		System.out.println("OWLAPI:\t\t" + fill(res[0], largest));
+		System.out.println("FAME EL ND:\t" + fill(res[1], largest));
+		System.out.println("FAME M ND:\t" + fill(res[2], largest));
+		System.out.println("FAME EL D:\t" + fill(res[3], largest));
+		System.out.println("FAME M D:\t" + fill(res[4], largest));
+		System.out.println("FAMEND EL:\t" + fill(res[5], largest));
+		System.out.println("FAMEND M:\t" + fill(res[6], largest));
+	}
+
+	public static String fill(long number, long digits){
+		String res = "" + number;
+		String comp = "" + digits;
+		while(res.length() < comp.length()){
+			res = " " + res;
+		}
+		return res;
 	}
 }

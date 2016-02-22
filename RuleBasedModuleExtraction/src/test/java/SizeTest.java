@@ -46,7 +46,7 @@ public class SizeTest {
 		SignatureGenerator.testSet(new SignatureTest() {
 			@Override
 			public void method(Set<OWLClass> testSet, OWLOntology ontology) {
-				Set<OWLAxiom> moduleRBME = (new RBMExtractor(false)).extractModule(ruleSet, Collections.unmodifiableSet(testSet));
+				Set<OWLAxiom> moduleRBME = (new RBMExtractor(false, false)).extractModule(ruleSet, Collections.unmodifiableSet(testSet));
 				Set<OWLAxiom> moduleOWLApi = extractor.extract(Collections.unmodifiableSet(testSet));
 				//stop the compiler from optimizing away the module generation
 				assertTrue(moduleRBME.size() >= 0);

@@ -43,6 +43,7 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 	
 	
 	private Set<Rule> rules;
+	private Rule[] rulesArray;
 	private int pos;
 	
 	private int size = -1;
@@ -66,6 +67,10 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 	
 	public OWLObject lookup(int i){
 		return arrDictionary[i];
+	}
+	
+	public OWLObject debugLookup(int i){
+		return dictionary.get(i);
 	}
 	
 	public List<Integer> getAxiomSignature(int i){
@@ -103,13 +108,19 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 		//base module and -signature		
 		size = rules.size();
 		ruleMap = Collections.unmodifiableMap(ruleMap);
-		rules = Collections.unmodifiableSet(rules);
+		
+		rulesArray = new Rule[rules.size()];
+		int cnt = 0;
+		for(Rule r : rules){
+			rulesArray[cnt++] = r;
+		}
+		rules = null;//Collections.unmodifiableSet(rules);
 		
 		arrDictionary = dictionary.toArray(new OWLObject[1]);
 		arrisDeclRule = isDeclRule.toArray(new Boolean[1]);
 		dictionary = Collections.unmodifiableList(dictionary);
 		
-		RBMExtractor rbme = new RBMExtractor(false);
+		RBMExtractor rbme = new RBMExtractor(false, false);
 		Set<OWLEntity> sig = new HashSet<>();
 		baseSignature = new LinkedHashSet<>();
 		baseModule.forEach(x -> sig.addAll(x.getSignature()));
@@ -121,15 +132,19 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 	}
 	
 	public Rule getRule(int i){
-		Iterator<Rule> it = rules.iterator();
+		/*Iterator<Rule> it = rules.iterator();
 		Rule c = it.next();
 		for(int j = 0; j < i; j++){
 			c = it.next();
 		}
-		return c;
+		return c;*/
+		return rulesArray[i];
 	}
 	
 	public void add(Rule r){
+		if(rules == null){
+			throw new UnsupportedOperationException("RuleSet has already been finalized, cannot add rule '" + r + "'");
+		}
 		if(r.size() > 0){
 			if(this.rules.add(r)){
 				if(r.getAxiom() != null){
@@ -146,12 +161,6 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 				pos++;
 			}
 		}
-		/*else if(r.getHead() != null){
-			r.getHead().accept(this);
-		}
-		else{
-			r.getAxiom().accept(this);
-		}*/
 	}
 	
 	@Override
@@ -221,6 +230,6 @@ public class RuleSet extends OWLObjectVisitorAdapter implements Iterable<Rule>{
 
 	@Override
 	public Iterator<Rule> iterator() {
-		return rules.iterator();
+		return new ArrayIterator<Rule>(rulesArray);
 	}
 }

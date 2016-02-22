@@ -14,6 +14,8 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
+import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 
 /**
  * Utility class which can be used to print diverse OWL objects
@@ -36,7 +38,7 @@ public class ClassPrinter {
 		}
 		else if(oce instanceof OWLObjectSomeValuesFrom){
 			OWLObjectSomeValuesFrom ex = (OWLObjectSomeValuesFrom) oce;			
-			s = "€" + printIRI(ex.getProperty().asOWLObjectProperty().getIRI().toString()) + "." + printClass(ex.getFiller());
+			s = "â‚¬" + printIRI(ex.getProperty().asOWLObjectProperty().getIRI().toString()) + "." + printClass(ex.getFiller());
 		}
 		else if(oce instanceof OWLClass){
 			s = printIRI(((OWLClass)oce).getIRI().toString());
@@ -77,13 +79,22 @@ public class ClassPrinter {
 			Iterator<OWLNamedIndividual> iter = ind.iterator();
 			s = "(" + printIRI(ass.getProperty().asOWLObjectProperty().getIRI().toString()) + ")(" + printIRI(iter.next().getIRI().toString()) + ", " + printIRI(iter.next().getIRI().toString()) + ")";
 		}
+		else if(ax instanceof OWLSubObjectPropertyOfAxiom){
+			OWLSubObjectPropertyOfAxiom sub = (OWLSubObjectPropertyOfAxiom) ax;
+			s = printClass(sub.getSubProperty()) + "[ " + printClass(sub.getSuperProperty());
+		}
 		else if(ax instanceof OWLDeclarationAxiom){
 			OWLDeclarationAxiom decl = (OWLDeclarationAxiom) ax;
 			s = "Declare " + printClass(decl.getEntity());
 		}
+		else if(ax instanceof OWLTransitiveObjectPropertyAxiom){
+			OWLTransitiveObjectPropertyAxiom trans = (OWLTransitiveObjectPropertyAxiom) ax;
+			s = "Trans(" + printClass(trans.getProperty()) + ")";
+		}
 		else{
 			System.out.println("Not sure what to do with " + ax.getClass());
-			throw new IllegalArgumentException("");
+			s += ax.toString();
+			//throw new IllegalArgumentException("");
 		}
 		return s;
 	}

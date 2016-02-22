@@ -1,4 +1,4 @@
-package de.spellmaker.rbme.mains;
+package de.spellmaker.rbme.mains.workers;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -14,6 +14,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import de.spellmaker.rbme.rule.BottomModeRuleBuilder;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
 import de.spellmaker.rbme.rule.RuleSet;
 
@@ -32,7 +33,10 @@ public class ModuleSizeWorker implements Callable<Double[]> {
 		OWLOntologyManager m = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = m.loadOntologyFromOntologyDocument(file);
 		System.out.println("[Task " + id + "] loaded ontology");
-		RuleSet ruleSet = (new ELRuleBuilder()).buildRules(ontology.getAxioms());
+		System.out.println("[Task " + id + "]" + ontology.getAxiomCount() + " axioms in the ontology");
+		ELRuleBuilder ruleBuilder = new ELRuleBuilder();
+		ruleBuilder.printUnknown = true;
+		RuleSet ruleSet = (ruleBuilder).buildRules(ontology.getAxioms());
 
 		int biggest1 = -1;
 		int biggest2 = -1;

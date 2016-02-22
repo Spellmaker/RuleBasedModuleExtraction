@@ -42,7 +42,7 @@ public class ModuleBuilder {
 			Set<Integer> currentSignatureInt = new HashSet<>();
 			currentSignatureInt.add(ruleSet.putObject(e));
 			
-			RBMExtractor rbme = new RBMExtractor(doDefinitions);
+			RBMExtractor rbme = new RBMExtractor(doDefinitions, false);
 			Set<OWLAxiom> currentModule = new HashSet<>(rbme.extractModule(ruleSet, currentSignature));
 			Set<Integer> currentModuleInt = currentModule.stream().map(x -> ruleSet.putObject(x)).collect(Collectors.toSet());
 			

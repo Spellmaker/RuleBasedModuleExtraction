@@ -21,22 +21,17 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  * @author spellmaker
  *
  */
-public class RBMExtractor {
+public class RBMExtractorNoDef {
 	private Set<Integer> module;
 	private Set<OWLAxiom> finalModule;
 	private boolean[] knownNotBottom;//Set<Integer> knownNotBottom;
-	private Integer[] definitions;
 	private Queue<Integer> queue;
 	private Integer owlThing;
 	private RuleSet rules;
-	private boolean doDefinitions = false;
 	private boolean debug = false;
-	
-	private Integer[] defDeclPos;
 	private Integer[] ruleAxioms;
 	
-	public RBMExtractor(boolean doDefinitions, boolean debug){
-		this.doDefinitions = doDefinitions;
+	public RBMExtractorNoDef(boolean debug){
 		this.debug = debug;
 	}
 	
@@ -76,11 +71,6 @@ public class RBMExtractor {
 		int[] ruleCounter = new int[rules.size()]; 						//counter for the number of elements in the rule body
 		Integer[] ruleHeads = new Integer[rules.size()]; 				//rule heads of intermediary rules
 		ruleAxioms = new Integer[rules.size()]; 						//axioms of leaf rules
-		Integer[] ruleDefs = new Integer[rules.size()];					//symbol defined by the rule
-		boolean[] definedAxioms = new boolean[rules.dictionarySize()];  //indicates if the axiom is used for a definition
-		boolean[] isDeclAxRule = new boolean[rules.size()];				//indicates if the rule adds a declaration axiom
-		defDeclPos = new Integer[rules.dictionarySize()];				//assigns to symbols the declarating axiom for use with definitions
-		definitions = new Integer[rules.dictionarySize()];				//assings to symbols the defining axiom
 		
 		//add base module and signature
 		finalModule.addAll(rules.getBaseModule());
@@ -92,21 +82,8 @@ public class RBMExtractor {
 			ruleCounter[pos] = rule.size();
 			ruleHeads[pos] = rule.getHead();
 			ruleAxioms[pos] = rule.getAxiom();
-			isDeclAxRule[pos] = rules.isDeclRule(pos);
-			if(doDefinitions) ruleDefs[pos] = rule.getDefinition();
 			pos++;
 		}
-		
-		/*if(debug){
-			System.out.print("starting queue is ");
-			queue.forEach(x -> System.out.print(rules.lookup(x) + " "));
-			System.out.println();
-			if(finalModule.size() > 0){
-			System.out.println("starting with module ");
-			finalModule.forEach(x -> System.out.println(ClassPrinter.printAxiom(x)));
-			}
-		}*/
-		
 		
 		//main processing loop
 		for(Integer front = queue.poll(); front != null; front = queue.poll()){
@@ -120,17 +97,6 @@ public class RBMExtractor {
 				//System.out.println("processing rule " + cRule + " (" + rules.getRule(cRule) + ")");
 				if(ruleCounter[cRule] <= 0) continue; //rule has already been processed
 				
-				//if the axiom is an OWLDeclarationAxiom and there is a valid definition for the declared thing
-				//do not progress rule evaluation
-				if(doDefinitions && isDeclAxRule[cRule]){
-					Integer symbol = rules.getRule(cRule).get(0);
-					Integer def = definitions[symbol];
-					if(def != null && def >= 0){
-						defDeclPos[symbol] = cRule;
-						continue;
-					}
-				}
-				
 				//check for rule completion, that is, if all body elements 
 				//have been found to be possibly not bottom
 				if(--ruleCounter[cRule] <= 0){
@@ -141,48 +107,13 @@ public class RBMExtractor {
 						Integer currentAxiom = ruleAxioms[cRule];
 						//skip, if the axiom is already in the module
 						if(knownNotBottom[currentAxiom]) continue;
-						//also skip if the axiom is used in a definition
-						if(definedAxioms[currentAxiom]) continue;
 						
-						//find out if adding the axiom might be avoided by assuming a definition
-						Integer definedSymbol = ruleDefs[cRule];
-						if(doDefinitions && definedSymbol != null && !knownNotBottom[definedSymbol]){
-							Integer oldDefAxiom = definitions[definedSymbol];
-							
-							//if there already is a definition for the symbol, roll back 
-							if(oldDefAxiom != null){
-								if(debug){
-									System.out.println("collapsing definition for " + 
-												rules.lookup(definedSymbol) + " due to axiom " + 
-												ClassPrinter.printAxiom((OWLAxiom) rules.lookup(currentAxiom)));
-									
-								}
-								if(oldDefAxiom != -1) collapseDefinition(oldDefAxiom);
-								
-								module.add(currentAxiom); 
-								knownNotBottom[currentAxiom] = true;
-								rules.getAxiomSignature(currentAxiom).forEach(x -> addQueue(x));
-							}
-							else{
-								//mark axiom as defined
-								definedAxioms[currentAxiom] = true;
-								//add definition
-								definitions[definedSymbol] = currentAxiom;
-								knownNotBottom[definedSymbol] = true;
-								queue.add(definedSymbol);
-								if(debug) System.out.println("defining symbol " + 
-										rules.lookup(definedSymbol) + " via axiom " + 
-										ClassPrinter.printAxiom((OWLAxiom) rules.lookup(currentAxiom)));
-							}
-						}
-						else{
-							//in case the head is an axiom, add all new vocabulary from the axiom
-							//into the processing queue
-							rules.getAxiomSignature(ruleAxioms[cRule]).forEach(x -> addQueue(x));
-							module.add(ruleAxioms[cRule]);
-							knownNotBottom[ruleAxioms[cRule]] = true;
-							if(debug && !(rules.lookup(currentAxiom) instanceof OWLDeclarationAxiom)) System.out.println("added axiom " + ClassPrinter.printAxiom((OWLAxiom) rules.lookup(currentAxiom)));
-						}
+						//in case the head is an axiom, add all new vocabulary from the axiom
+						//into the processing queue
+						rules.getAxiomSignature(ruleAxioms[cRule]).forEach(x -> addQueue(x));
+						module.add(ruleAxioms[cRule]);
+						knownNotBottom[ruleAxioms[cRule]] = true;
+						if(debug) System.out.println("added axiom " + ClassPrinter.printAxiom((OWLAxiom) rules.lookup(currentAxiom)));
 					}
 					else{
 						/*if(head instanceof OWLAxiom){
@@ -202,21 +133,7 @@ public class RBMExtractor {
 		return finalModule;
 	}
 	
-	public List<Integer> getDefinedAxioms(){
-		List<Integer> result = new LinkedList<>();
-		for(int pos = 0; pos < definitions.length; pos++){
-			if(definitions[pos] != null){
-				result.add(definitions[pos]);
-			}
-		}
-		return result;
-	}
-	
 	private boolean addQueue(Integer o){
-		if(doDefinitions && definitions[o] != null && definitions[o] >= 0){
-			collapseDefinition(o);
-			if(debug) System.out.println("collapsing definition of element " + rules.lookup(o) + " due to double adding");
-		}
 		//add the entity to the list of those known to be possibly not bottom
 		if(knownNotBottom[o] == false){
 			knownNotBottom[o] = true;
@@ -233,22 +150,5 @@ public class RBMExtractor {
 			return queue.add(o);
 		}
 		return false;
-	}
-	
-	private void collapseDefinition(Integer definedSymbol){
-		Integer defAxiom = definitions[definedSymbol];
-		//mark definition as invalid
-		definitions[definedSymbol] = -1;
-		//add equivalence axiom to the module
-		module.add(defAxiom);
-		if(debug) System.out.println("collapsing adds axiom " + ClassPrinter.printAxiom((OWLAxiom) rules.lookup(defAxiom)));
-		knownNotBottom[defAxiom] = true;
-		//add signature
-		rules.getAxiomSignature(defAxiom).forEach(x -> addQueue(x));
-		//add declaration, if the corresponding rule was ignored
-		if(defDeclPos[definedSymbol] != null){
-			module.add(ruleAxioms[defDeclPos[definedSymbol]]);
-			knownNotBottom[ruleAxioms[defDeclPos[definedSymbol]]] = true;
-		}
 	}
 }

@@ -54,7 +54,7 @@ public class SpeedTest {
 			@Override
 			public void method(Set<OWLClass> testSet, OWLOntology ontology) {
 				startTime = System.currentTimeMillis();
-				Set<OWLAxiom> module = (new RBMExtractor(false)).extractModule(ruleSet, Collections.unmodifiableSet(testSet));
+				Set<OWLAxiom> module = (new RBMExtractor(false, false)).extractModule(ruleSet, Collections.unmodifiableSet(testSet));
 				endTime = System.currentTimeMillis();
 				totalTime += endTime - startTime;
 				assertTrue(module.size() >= 0);

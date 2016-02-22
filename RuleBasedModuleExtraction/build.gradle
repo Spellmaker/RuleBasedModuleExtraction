@@ -30,7 +30,7 @@ repositories {
 
 jar{
 	manifest{
-		attributes 'Main-Class': 'de.spellmaker.rbme.mains.TestModuleSizes'
+		attributes 'Main-Class': 'de.spellmaker.rbme.mains.TestRandTimes'
 	}
 }
 

@@ -1,4 +1,4 @@
-package de.spellmaker.rbme.mains;
+package de.spellmaker.rbme.mains.workers;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +26,7 @@ public class ModuleExtractionWorker implements Callable<Pair<Boolean, Integer>> 
 	public Pair<Boolean, Integer> call() throws Exception {
 		Set<OWLEntity> signature = new HashSet<>();
 		signature.add(e);
-		RBMExtractor extr = new RBMExtractor(doDef);
+		RBMExtractor extr = new RBMExtractor(doDef, false);
 		return new Pair<>(doDef, extr.extractModule(ruleSet, signature).size());
 	}
 

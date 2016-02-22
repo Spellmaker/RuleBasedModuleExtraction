@@ -1,4 +1,4 @@
-package de.spellmaker.rbme.mains;
+package de.spellmaker.rbme.mains.old;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;

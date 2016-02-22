@@ -504,6 +504,8 @@ public class SemanticLocalityEvaluator implements LocalityEvaluator {
             log.fine("Replacing axiom by Bottom");
         }
         OWLAxiom newAxiom = bottomReplacer.replaceBottom(axiom, signature);
+        System.out.println("replaced axiom:");
+        System.out.println(newAxiom);
         if (log.isLoggable(Level.FINE)) {
             log.fine("DONE Replacing axiom by Bottom. Success: "
                     + (newAxiom != null));

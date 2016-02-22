@@ -1,6 +1,7 @@
 package de.spellmaker.rbme.rule;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,6 +87,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDeclarationAxiomImpl;
 public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpressionVisitor, OWLPropertyExpressionVisitor{
 	private RuleSet rs;
 	private List<OWLObject> unknownObjects;
+	public boolean printUnknown = false;
 	
 	@Override
 	public RuleSet buildRules(Set<OWLAxiom> axioms){
@@ -98,7 +100,16 @@ public class ELRuleBuilder implements RuleBuilder, OWLAxiomVisitor, OWLClassExpr
 		rs.finalize();
 		
 		if(unknownObjects.size() > 0){
-			System.out.println("warning: could not generate rules for at least " + unknownObjects.size() + " constructors");
+			//System.out.println("warning: could not generate rules for at least " + unknownObjects.size() + " constructors");
+			if(printUnknown){
+				Set<Class<?>> classes = new HashSet<>();
+				for(Object o : unknownObjects){
+					if(!classes.contains(o.getClass())){
+						classes.add(o.getClass());
+						System.out.println("unknown constructor: " + o.getClass());
+					}
+				}
+			}
 		}
 		return rs;
 	}

@@ -108,15 +108,15 @@ public class Rule implements Iterable<Integer>{
 
 	@Override
 	public Iterator<Integer> iterator() {
-		return new ArrayIterator(body);
+		return new ArrayIterator<Integer>(body);
 	}
 }
 
-class ArrayIterator implements Iterator<Integer>{
-	private final Integer[] array;
+class ArrayIterator<T> implements Iterator<T>{
+	private final T[] array;
 	private int position;
 	
-	public ArrayIterator(Integer[] array){
+	public ArrayIterator(T[] array){
 		this.array = array;
 		this.position = -1;
 	}
@@ -127,7 +127,7 @@ class ArrayIterator implements Iterator<Integer>{
 	}
 
 	@Override
-	public Integer next() {
+	public T next() {
 		return array[++position];
 	}
 	

@@ -94,10 +94,10 @@ public class WorkerThread implements Callable<Map<String, String>> {
 			printInfo("performing correctness and size tests");
 			for(int i = 0; i < ontologySignature.size(); i++){
 				OWLClass element = ontologySignature.get(i);
-				Set<OWLClass> sign = new HashSet<>();
+				Set<OWLEntity> sign = new HashSet<>();
 				sign.add(element);
 				Set<OWLAxiom> moduleOWLAPI = extractor.extract(Collections.unmodifiableSet(sign));
-				Set<OWLAxiom> moduleRBME = (new RBMExtractor()).extractModule(ruleSet, sign);
+				Set<OWLAxiom> moduleRBME = (new RBMExtractor(false, false)).extractModule(ruleSet, sign);
 				
 				//check general correctness
 				if(mCheck.isSemanticalLocalModule(ontology, moduleOWLAPI) != null){
@@ -147,9 +147,9 @@ public class WorkerThread implements Callable<Map<String, String>> {
 		for(int i = 0; i < iterations; i++){
 			for(int j = 0; j < ontologySignature.size(); j++){
 				OWLClass element = ontologySignature.get(j);
-				Set<OWLClass> sign = new HashSet<>();
+				Set<OWLEntity> sign = new HashSet<>();
 				sign.add(element);
-				(new RBMExtractor()).extractModule(ruleSet, sign);
+				(new RBMExtractor(false, false)).extractModule(ruleSet, sign);
 			}
 		}
 		endTime = System.currentTimeMillis();
