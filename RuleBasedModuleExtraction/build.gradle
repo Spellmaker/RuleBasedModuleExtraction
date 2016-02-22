@@ -26,16 +26,20 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
     mavenCentral()
+    flatDir{
+    	dirs 'lib'
+    }
 }
 
 jar{
 	manifest{
-		attributes 'Main-Class': 'de.spellmaker.rbme.mains.TestRandTimes'
+		attributes 'Main-Class': 'de.spellmaker.rbme.evaluation.EvaluationMain'
+		attributes 'Premain-Class': 'objectexplorer.InstrumentationGrabber'
 	}
 }
 
 shadowJar {
-	baseName = 'moduleSizeTest'
+	baseName = 'FAME'
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -51,4 +55,9 @@ dependencies {
     compile group: 'net.sourceforge.owlapi', name: 'owlapi-distribution', version: '3.5.1'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.12'
     compile group: 'com.hermit-reasoner', name: 'org.semanticweb.hermit', version: '1.3.8.4'
+    compile name: 'jcel-core-0.24.0-SNAPSHOT'
+    compile name: 'jcel-coreontology-0.24.0-SNAPSHOT'
+    compile name: 'jcel-ontology-0.24.0-SNAPSHOT'
+    compile name: 'jcel-owlapi-0.24.0-SNAPSHOT'
+    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 }

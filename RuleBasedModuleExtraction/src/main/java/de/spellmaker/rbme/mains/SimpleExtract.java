@@ -3,46 +3,57 @@ package de.spellmaker.rbme.mains;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-
-import com.clarkparsia.owlapi.modularity.locality.LocalityEvaluator;
-
 import de.spellmaker.rbme.OntologiePaths;
 import de.spellmaker.rbme.extractor.CompressedExtractor;
-import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.extractor.RBMExtractorNoDef;
-import de.spellmaker.rbme.reachability.ReachabilityModuleExtractor;
 import de.spellmaker.rbme.rule.BottomModeRuleBuilder;
-import de.spellmaker.rbme.rule.CompressedRule;
 import de.spellmaker.rbme.rule.CompressedRuleBuilder;
 import de.spellmaker.rbme.rule.CompressedRuleSet;
-import de.spellmaker.rbme.rule.ELRuleBuilder;
 import de.spellmaker.rbme.rule.RuleSet;
 import de.spellmaker.rbme.util.ClassPrinter;
-import de.spellmaker.rbme.util.TerminologyCheck;
-import uk.ac.manchester.cs.owl.owlapi.OWLDeclarationAxiomImpl;
-import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
-import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
+import de.tudresden.inf.lat.jcel.core.algorithm.module.ModuleExtractor;
+import de.tudresden.inf.lat.jcel.coreontology.axiom.NormalizedIntegerAxiom;
+import de.tudresden.inf.lat.jcel.ontology.axiom.complex.ComplexIntegerAxiom;
+import de.tudresden.inf.lat.jcel.ontology.axiom.extension.IntegerOntologyObjectFactoryImpl;
+import de.tudresden.inf.lat.jcel.ontology.normalization.OntologyNormalizer;
+import de.tudresden.inf.lat.jcel.owlapi.translator.Translator;
 
 public class SimpleExtract {
 	public static void main(String[] args) throws Exception{
 		OWLOntologyManager m = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = m.loadOntologyFromOntologyDocument(new File(OntologiePaths.galen));
+		System.out.println("loaded");
+		Translator trans = new Translator(m.getOWLDataFactory(), new IntegerOntologyObjectFactoryImpl());
+		Set<ComplexIntegerAxiom> transOntology = trans.translateSA(ontology.getAxioms());
+		System.out.println("translated");
+		
+		Set<Integer> sign = new HashSet<>();
+		for(OWLEntity e : ontology.getSignature()){
+			if(e.toString().equals("<http://chen.moe/onto/med/Cystic_Fibrosis>") ||
+					e.toString().equals("<http://chen.moe/onto/med/Genetic_Disorder>")){
+				//sign.add(trans.translateC((OWLClass) e));
+			}
+		}
+		ModuleExtractor jcel = new ModuleExtractor();
+		OntologyNormalizer on = new OntologyNormalizer();
+		Set<NormalizedIntegerAxiom> normOntology = on.normalize(transOntology, new IntegerOntologyObjectFactoryImpl());
+		Set<NormalizedIntegerAxiom> mod = jcel.extractModule(normOntology, sign);
+		
+		for(NormalizedIntegerAxiom nia : mod){
+			System.out.println(nia.getClass());
+			System.out.println(nia);
+		}
+		
+		System.exit(0);
 		
 		RuleSet rs = (new BottomModeRuleBuilder()).buildRules(ontology.getAxioms());
 		CompressedRuleSet crs = (new CompressedRuleBuilder()).buildRules(ontology.getAxioms());
@@ -109,6 +120,7 @@ public class SimpleExtract {
 		RBMExtractorNoDef rbme = new RBMExtractorNoDef(false);
 		start = System.currentTimeMillis();
 		for(Set<OWLEntity> e : signatures){
+			@SuppressWarnings("unused")
 			Set<OWLAxiom> m1 = rbme.extractModule(rs, e);
 		}
 		end = System.currentTimeMillis();
@@ -117,6 +129,7 @@ public class SimpleExtract {
 		CompressedExtractor compressed = new CompressedExtractor();
 		start = System.currentTimeMillis();
 		for(Set<OWLEntity> e : signatures){
+			@SuppressWarnings("unused")
 			Set<OWLAxiom> m1 = compressed.extractModule(crs, e);
 		}
 		end = System.currentTimeMillis();

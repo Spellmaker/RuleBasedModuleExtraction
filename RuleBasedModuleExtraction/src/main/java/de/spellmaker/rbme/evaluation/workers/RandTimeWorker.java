@@ -1,4 +1,4 @@
-package de.spellmaker.rbme.mains.workers;
+package de.spellmaker.rbme.evaluation.workers;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,7 +18,6 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.rule.BottomModeRuleBuilder;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
 import de.spellmaker.rbme.rule.RuleSet;
@@ -64,8 +63,8 @@ public class RandTimeWorker implements Callable<Long[]>{
 			futures.add(pool.submit(new FAMEExtractionWorker(signature, false, rulesMode, 2)));
 			futures.add(pool.submit(new FAMEExtractionWorker(signature, true, rulesEL, 3)));
 			futures.add(pool.submit(new FAMEExtractionWorker(signature, true, rulesMode, 4)));
-			futures.add(pool.submit(new FAMENoDefExtractionWorker(signature, true, rulesEL, 5)));
-			futures.add(pool.submit(new FAMENoDefExtractionWorker(signature, true, rulesMode, 6)));
+			futures.add(pool.submit(new FAMENoDefExtractionWorker(signature, rulesEL, 5)));
+			futures.add(pool.submit(new FAMENoDefExtractionWorker(signature, rulesMode, 6)));
 		}
 		
 		Long[] result = new Long[7];

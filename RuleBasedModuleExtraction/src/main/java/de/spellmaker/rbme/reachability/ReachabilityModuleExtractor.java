@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
@@ -18,12 +17,10 @@ import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
-import de.spellmaker.rbme.util.ClassPrinter;
 import uk.ac.manchester.cs.owl.owlapi.OWLDeclarationAxiomImpl;
 
 public class ReachabilityModuleExtractor {
 	private Map<OWLEntity, List<OWLAxiom>> mapping;
-	private OWLOntology ontology;
 	
 	private void addAxiom(OWLAxiom ax, OWLClassExpression expr){
 		for(OWLEntity e : expr.getSignature()){
@@ -37,7 +34,6 @@ public class ReachabilityModuleExtractor {
 	}
 	
 	public ReachabilityModuleExtractor(OWLOntology ontology){
-		this.ontology = ontology;
 		mapping = new HashMap<>();
 		for(OWLAxiom a : ontology.getAxioms()){
 			if(a instanceof OWLEquivalentClassesAxiom){

@@ -8,8 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import de.spellmaker.rbme.mains.workers.ExtractionTimeAllWorker;
-import de.spellmaker.rbme.mains.workers.RuleGenerationWorker;
+import de.spellmaker.rbme.evaluation.workers.ExtractionTimeAllWorker;
 
 public class ExtractionTimeAllTest{
 	public static void main(String[] args) throws Exception{

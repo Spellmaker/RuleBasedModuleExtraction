@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 import de.spellmaker.rbme.rule.Rule;
 import de.spellmaker.rbme.rule.RuleSet;
@@ -27,7 +26,6 @@ public class RBMExtractorNoDef {
 	private boolean[] knownNotBottom;//Set<Integer> knownNotBottom;
 	private Queue<Integer> queue;
 	private Integer owlThing;
-	private RuleSet rules;
 	private boolean debug = false;
 	private Integer[] ruleAxioms;
 	
@@ -43,7 +41,6 @@ public class RBMExtractorNoDef {
 	 */
 	public Set<OWLAxiom> extractModule(RuleSet rules, Set<OWLEntity> signature){
 		if(debug) System.out.println("> Extraction start");
-		this.rules = rules;
 		//initialize the processing queue to the signature
 		module = new HashSet<>();
 		finalModule = new HashSet<>();

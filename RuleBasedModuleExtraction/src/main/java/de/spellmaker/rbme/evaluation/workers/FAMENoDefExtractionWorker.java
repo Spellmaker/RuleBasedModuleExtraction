@@ -1,23 +1,20 @@
-package de.spellmaker.rbme.mains.workers;
+package de.spellmaker.rbme.evaluation.workers;
 
 import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
-import de.spellmaker.rbme.extractor.RBMExtractor;
 import de.spellmaker.rbme.extractor.RBMExtractorNoDef;
 import de.spellmaker.rbme.rule.RuleSet;
 
 public class FAMENoDefExtractionWorker implements Callable<Long[]>{
 	private Set<OWLEntity> sign;
-	private boolean def;
 	private RuleSet rules;
 	private int ind;
 	
-	public FAMENoDefExtractionWorker(Set<OWLEntity> sign, boolean def, RuleSet rules, int ind){
+	public FAMENoDefExtractionWorker(Set<OWLEntity> sign, RuleSet rules, int ind){
 		this.sign = sign;
-		this.def = def;
 		this.rules = rules;
 		this.ind = ind;
 	}

@@ -1,4 +1,4 @@
-package de.spellmaker.rbme.mains;
+package de.spellmaker.rbme.evaluation;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,9 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import de.spellmaker.rbme.mains.workers.ModuleSizeWorker;
+import de.spellmaker.rbme.evaluation.workers.ModuleSizeWorker;
 
-public class TestModuleSizes {
+public class TestModuleSizes implements EvaluationCase{
 	public static List<Integer> readGenerating(String file) throws Exception{
 		List<Integer> generating = new LinkedList<>();
 		if(Files.exists(Paths.get(file))){
@@ -30,14 +30,19 @@ public class TestModuleSizes {
 		return generating;
 	}
 	
-	public static void main(String[] args) throws Exception{
-		//determine ontologies to test
-		//OREManager ore = new OREManager();
-		//ore.load(Paths.get(args[0]), "el/consistency", "el/classification", "el/instantiation");	
-		List<File> files = new LinkedList<>();// = ore.filterOntologies(new ORESizeFilter(0, 100, 500), "logical_axiom_count");
-		//files.add(new File("EL-GALEN.owl"));
-		files.add(new File("snomedStated_INT_20140731.owl"));
-		
+	public static void makeOutput(Double[] res){
+		System.out.println("biggest module without optimization: " + res[0]);
+		System.out.println("biggest module with optimization: " + res[1]);
+		double percent = 100 - (res[1] * 100) / res[0];
+		System.out.println("percent reduction: " + percent);
+		System.out.println("avg module size without optimization: " + res[2]);
+		System.out.println("avg module size with optimization: " + res[3]);
+		percent = 100 - (res[3] * 100) / res[2];
+		System.out.println("percent reduction: " + percent);
+	}
+
+	@Override
+	public void evaluate(List<File> files, List<String> options) throws Exception {		
 		//setup threads
 		ExecutorService mainPool = Executors.newFixedThreadPool(1);
 		ExecutorService extractorPool = Executors.newFixedThreadPool(5);
@@ -65,16 +70,5 @@ public class TestModuleSizes {
 		}
 		mainPool.shutdown();
 		extractorPool.shutdown();
-	}
-	
-	public static void makeOutput(Double[] res){
-		System.out.println("biggest module without optimization: " + res[0]);
-		System.out.println("biggest module with optimization: " + res[1]);
-		double percent = 100 - (res[1] * 100) / res[0];
-		System.out.println("percent reduction: " + percent);
-		System.out.println("avg module size without optimization: " + res[2]);
-		System.out.println("avg module size with optimization: " + res[3]);
-		percent = 100 - (res[3] * 100) / res[2];
-		System.out.println("percent reduction: " + percent);
 	}
 }

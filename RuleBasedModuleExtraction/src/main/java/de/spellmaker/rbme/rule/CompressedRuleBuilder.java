@@ -74,8 +74,6 @@ import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.SWRLRule;
 
-import de.spellmaker.rbme.util.ClassPrinter;
-
 public class CompressedRuleBuilder implements OWLAxiomVisitor, OWLClassExpressionVisitor, OWLPropertyExpressionVisitor{
 	private CompressedRuleSet ruleSet;
 	private List<OWLObject> unknownObjects;

@@ -7,12 +7,10 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 
 import de.spellmaker.rbme.rule.CompressedRule;
 import de.spellmaker.rbme.rule.CompressedRuleSet;
-import de.spellmaker.rbme.util.ClassPrinter;
 
 public class CompressedExtractor {
 
@@ -38,7 +36,6 @@ public class CompressedExtractor {
 		}
 
 		addQueue(0, queue, known);
-		int brk = 0;
 		while(!queue.isEmpty()){
 			Integer e = queue.poll();
 			

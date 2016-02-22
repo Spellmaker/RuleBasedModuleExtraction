@@ -1,26 +1,18 @@
-package de.spellmaker.rbme.mains;
+package de.spellmaker.rbme.evaluation;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import de.spellmaker.rbme.mains.workers.RuleGenerationWorker;
+import de.spellmaker.rbme.evaluation.workers.RuleGenerationWorker;
 
-public class TestRuleGeneration {
-	public static void main(String[] args) throws Exception{
-		//determine ontologies to test
-		//OREManager ore = new OREManager();
-		//ore.load(Paths.get(args[0]), "el/consistency", "el/classification", "el/instantiation");	
-		List<File> files = new LinkedList<>();// = ore.filterOntologies(new ORESizeFilter(0, 100, 500), "logical_axiom_count");
-		//files.add(new File("EL-GALEN.owl"));
-		files.add(new File("EL-GALEN.owl"));
-		files.add(new File("snomedStated_INT_20140731.owl"));
-		
-		int iterations = 1000;
+public class TestRuleGeneration implements EvaluationCase{
+	@Override
+	public void evaluate(List<File> files, List<String> options) throws Exception {
+		int iterations = Integer.parseInt(options.get(0));
 		System.out.println("performing " + iterations  + " iterations of rule generation");
 		RuleGenerationWorker.iterations = iterations;
 		//setup threads

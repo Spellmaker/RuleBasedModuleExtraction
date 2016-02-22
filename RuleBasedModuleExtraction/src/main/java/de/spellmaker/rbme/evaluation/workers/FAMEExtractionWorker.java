@@ -1,4 +1,4 @@
-package de.spellmaker.rbme.mains.workers;
+package de.spellmaker.rbme.evaluation.workers;
 
 import java.util.Set;
 import java.util.concurrent.Callable;

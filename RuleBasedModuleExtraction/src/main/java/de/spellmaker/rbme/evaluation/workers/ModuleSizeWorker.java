@@ -1,4 +1,4 @@
-package de.spellmaker.rbme.mains.workers;
+package de.spellmaker.rbme.evaluation.workers;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -14,7 +14,6 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import de.spellmaker.rbme.rule.BottomModeRuleBuilder;
 import de.spellmaker.rbme.rule.ELRuleBuilder;
 import de.spellmaker.rbme.rule.RuleSet;
 

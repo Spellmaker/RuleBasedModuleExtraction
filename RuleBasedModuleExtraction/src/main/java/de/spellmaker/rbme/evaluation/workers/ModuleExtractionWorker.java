@@ -1,4 +1,4 @@
-package de.spellmaker.rbme.mains.workers;
+package de.spellmaker.rbme.evaluation.workers;
 
 import java.util.HashSet;
 import java.util.Set;
